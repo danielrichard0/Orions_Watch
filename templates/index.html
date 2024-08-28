@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+  Fetishia.store
+{% endblock%}
+
+{% block content %}
+{% load l10n %}
+<h1> Testing My Application</h1>
+<div class="container-md text-center">
+  <div class="bg-warning" style="height: 400px;">
+    <h1 class="text-light">testing</h1>
+  </div>
+  <div>
+    <h3>Produk</h3>
+    <div class="row">
+        {% if products %}
+          {% for product in products %}
+            <div class="col-lg-3 col-sm-6 px-4">
+              <!-- <img src="media/images/product/kucing_anggora_pBzF0G0.jpg" alt="">  -->
+              <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{{product.image}}" alt="">
+              <h6 class="text-break">{{product.title}}</h6>
+              {% localize on %}
+              <p>Rp {{product.price}}</p>
+              {% endlocalize %}
+            </div>
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
