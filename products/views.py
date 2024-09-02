@@ -6,6 +6,7 @@ from django.conf import settings
 class IndexView(generic.ListView):
     template_name = "products/index.html"
     context_object_name = "all_products"
+    paginate_by = 4
 
     def get_queryset(self):
         category_slug = self.kwargs.get('category_slug')
