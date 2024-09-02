@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container text-center">
+    <h3>Archives:Toko</h3>
+    <p>Beranda / Toko</p>
+    <h3>{{MEDIA_URL}} TEST</h3>
+    <div class="row">
+        <div class="col-9">
+            <div class="row">
+                {% if all_products %}
+                    {% for product in all_products %}
+                        <div class="col-lg-3 col-sm-6 px-4">
+                            <!-- <img src="media/images/product/kucing_anggora_pBzF0G0.jpg" alt="">  -->
+                            <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{{product.image.url}}" alt="">
+                            <h6 class="text-break">{{product.title}}</h6>
+                            <p>Rp {{product.price}}</p>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-3 text-start">
+            <h6><a class="link-underline-dark"href="">Kategori Produk</a></h6>
+            {% for category in categories %}
+            <p class="m-0"><a class="link-dark link-underline-opacity-0"href="{% url 'products:product-category' category.slug%}">{{category.name}} </a></p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
