@@ -11,16 +11,30 @@
     <h3>Archives:Toko</h3>
     <p>Beranda / Toko</p>
     <h3>{{MEDIA_URL}} TEST</h3>
+    <form method="GET" action="{% url 'products:index' %}">
+        <div class="row mb-5">
+            <div class="col-2 offset-9">
+                <input id="cari-produk" name='q' type="text" value="{{query}}" class="form-control" placeholder="Cari produk...">
+            </div>
+            <div class="col-1 px-0">
+                <button id="trigger-cari" type="submit" class="btn btn-dark w-100">Cari</button>
+            </div>
+        </div>
+    </form>
     <div class="row">
         <div class="col-9">
             <div class="row">
                 {% if all_products %}
                     {% for product in all_products %}
                         <div class="col-lg-3 col-sm-6 px-4">
-                            <!-- <img src="media/images/product/kucing_anggora_pBzF0G0.jpg" alt="">  -->
-                            <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{{product.image.url}}" alt="">
-                            <h6 class="text-break">{{product.title}}</h6>
+                            <div style="height: 24rem">
+                            <a href="{% url 'products:product-details' product.slug %}">
+                                <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{{product.image.url}}" alt="">
+                            </a>                            
+                            <h6 class="text-break mt-3">{{product.title}}</h6>
                             <p>Rp {{product.price}}</p>
+                        </div>
+                        <button class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
                     </div>
                     {% endfor %}
                 {% endif %}
@@ -66,7 +80,29 @@
                 </ul>
             </nav>
         </div>
-        
     </div>
 </div>
-{% endblock %}
+{% endblock %} 
+{% block customscript %}
+{% comment %} <script type="text/javascript">
+
+    $("#trigger-cari").on("click", function() {
+        let cari = $("#cari-produk").val()
+        let param = {
+            "query" : cari
+        }
+        $.ajax({
+            type: "GET",
+            url: "{% url 'products:index' %}",
+            data: param,
+            success: function() {
+                console.log("success")
+            },
+            error: function(e) {
+                console.log("error")
+            }
+        })
+    })
+    a = 5;
+</script> {% endcomment %}
+{% endblock customscript %}

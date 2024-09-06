@@ -1,0 +1,21 @@
+.sold-tag {
+    font-size: large;
+    color: rgb(51, 51, 51);
+    background-color: rgb(221, 221, 221);
+    padding: 6px;
+    border-radius: 10px;
+}
+
+.product-description {
+    margin-top: 2rem;
+    color: rgb(94, 94, 94);
+    font-size: large;
+}
+
+.logo-wa {
+    width: 30%;
+}
+
+.product-image {
+    width: max-content;
+}

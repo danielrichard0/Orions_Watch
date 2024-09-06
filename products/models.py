@@ -30,6 +30,12 @@ class Product(models.Model):
     date_created = models.DateTimeField("Date Created",auto_now_add=True)
     image = models.ImageField(null=True,blank=True ,upload_to="images/product/")
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    slug = models.CharField("Product Slug", max_length=100, blank=True, editable=False, unique=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug or self.title != self.__class__.objects.get(pk=self.pk).title:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
