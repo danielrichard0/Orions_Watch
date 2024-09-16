@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock title %}
+
+
+{% block content %}
+    <div class="container">
+        <h1>Registrasi Akun</h1>
+        <hr>
+        <div class="row">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class='col'>
+                        <label for="id_first_name">Nama Depan : </label>
+                        {{form.first_name}}
+                        <p style="color: gray">{{form.first_name.help_text}}</p>
+                    </div>
+                    <div class='col'>
+                        <label for="id_last_name">Nama Belakang : </label>
+                        {{form.last_name}}
+                            {% if form.last_name.errors %}
+                        {{form.last_name.errors}}
+                    {% endif %}
+                        <p style="color: gray">{{form.last_name.help_text}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="id_username">Username : </label>
+                        {{form.username}}
+                        {% if form.username.errors %}
+                            {{form.username.errors}}
+                        {% endif %}
+                        <p style="color: gray">{{form.username.help_text}}</p>
+
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="id_email">Email : </label>
+                        {{form.email}}
+                        {% if form.email.errors %}
+                            {{form.email.errors}}
+                        {% endif %}
+                        <p style="color: gray">{{form.email.help_text}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="id_password">Password : </label>
+                        {{form.password}}
+                        {% if form.password.errors %}
+                            {{form.password.errors}}
+                        {% endif %}
+                        <p style="color: gray">{{form.password.help_text}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="id_confirm_password">Confirm Password : </label>
+                        {{form.confirm_password}}
+                        {% if form.confirm_password.errors %}
+                            {{form.confirm_password.errors}}
+                        {% endif %}
+                        <p style="color: gray">{{form.confirm_password.help_text}}</p>
+                    </div>
+                </div>
+                {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li class='text-danger'>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <br>
+                <button style="width: 120px" type="submit" class="btn btn-dark my-5">Daftar</button>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+{% block customscript %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".errorlist").addClass('text-danger')
+    })
+</script>
+{% endblock customscript %}

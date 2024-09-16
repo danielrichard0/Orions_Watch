@@ -26,7 +26,7 @@
             <div class="row">
                 {% if all_products %}
                     {% for product in all_products %}
-                        <div class="col-lg-3 col-sm-6 px-4">
+                        <div name="product-card" class="col-lg-3 col-sm-6 px-4">
                             <div style="height: 24rem">
                             <a href="{% url 'products:product-details' product.slug %}">
                                 <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{{product.image.url}}" alt="">
@@ -34,7 +34,7 @@
                             <h6 class="text-break mt-3">{{product.title}}</h6>
                             <p>Rp {{product.price}}</p>
                         </div>
-                        <button class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
+                        <button onclick="addToCart({{product.id}}, this)" class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
                     </div>
                     {% endfor %}
                 {% endif %}
@@ -105,4 +105,7 @@
     })
     a = 5;
 </script> {% endcomment %}
+<script type="text/javascript">
+    // fungsi renderCart ada di base.html
+</script>
 {% endblock customscript %}

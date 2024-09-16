@@ -23,5 +23,10 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("products/", include("products.urls")),
-    path('admin/', admin.site.urls),
+    path('cart/', include("cart.urls")),
+    path('login/', views.custom_login_view, name="user-auth" ),
+    path('registration', views.custom_registration_view, name='user-registration'),
+    path('admin/', admin.site.urls, name="admin-site"),
+    path('logout/', views.logout_view, name='logout')
+    
 ] + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)

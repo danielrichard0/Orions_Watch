@@ -1,0 +1,29 @@
+{% if cart.cart %}
+{% load humanize %}
+    <table name="table-items"class="table" style="table-layout: auto">
+        <thead>
+            <tr>
+                <th class="product-remove"scope="col"></th>
+                <th class="product-thumbnail"scope="col"></th>
+                <th scope="col">Produk</th>
+                <th scope="col">Harga</th>
+                <th scope="col">Jumlah</th>
+                <th scope="col">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart.cart %}
+                <tr>
+                    <td style="width: 3rem; cursor: pointer;"><i onclick="deleteItem({{item.id}})" class="fa-solid fa-trash"></i></td>
+                    <td style="width: 5rem"><img class="img-fluid object-fit-cover rounded" src="{{ item.product.image.url }}" alt=""></td>
+                    <td>{{item.product.title }}</td>
+                    <td>Rp. {{item.product.price | intcomma}}</td>
+                    <td><input style="width: 4rem" min=0 class="form-control" type="number" value={{item.quantity}} name="item-quantity" data-item-id="{{item.id}}"></td>
+                    <td>Rp. {{item.total_itemprice | intcomma}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endif %}

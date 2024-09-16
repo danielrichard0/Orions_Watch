@@ -1,0 +1,21 @@
+{% if cart.cart %}
+{% load humanize %}
+<table name="table-totals" class='table-borderless w-100 mb-auto'>
+    <thead>
+        <tr>
+            <th class='p-2'>Total Belanja</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height: 10px;">
+            <td style="color: gray" class='p-2 fw-bold'><span>subtotal</span> <span style="float: right;">Rp. {{cart.subtotal | intcomma}}</span></td>
+        </tr>
+        <tr style="height: 10px;">
+            <td style="color: gray" class='p-2 fw-bold'><span>Pengiriman</span> <span style="float: right;">{{cart.subtotal}}</span></td>
+        </tr>
+        <tr style="height: 10px;">
+            <td style="color: gray" class='p-2 fw-bold'><span>Total</span> <span style="float: right;">{{cart.subtotal | intcomma}}</span></td>
+        </tr>                    
+    </tbody>
+</table>
+{% endif %}

@@ -8,6 +8,10 @@ class IndexView(generic.ListView):
     context_object_name = "all_products"
     paginate_by = 8
 
+    def get(self, request, *args, **kwargs):
+        info = self.request.user.is_authenticated
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         # tidak mungkin query dan category_slug bersamaan (2-2 nya true)
         query = self.request.GET.get('q')

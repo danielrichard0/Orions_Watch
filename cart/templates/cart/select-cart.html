@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock title %}
+
+{% block content %}
+<style>
+    .spinner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7);
+        z-index: 1000;
+    }
+</style>
+<div class="container cart-container">
+    {% load humanize %}
+    <h6>Beranda/Keranjang</h6>
+    {% if cart.cart %}
+    <div id="row-alert-success">
+
+    </div>
+    <div class="row gx-3">
+        <div id="section-items" class="col-md-8 position-relative">
+            <div class="border p-3">
+                <table name="table-items"class="table" style="table-layout: auto">
+                    <thead>
+                        <tr>
+                            <th class="product-remove"scope="col"></th>
+                            <th class="product-thumbnail"scope="col"></th>
+                            <th scope="col">Produk</th>
+                            <th scope="col">Harga</th>
+                            <th scope="col">Jumlah</th>
+                            <th scope="col">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart.cart %}
+                            <tr>
+                                <td style="width: 3rem; cursor: pointer;"><i onclick="deleteItem({{item.id}})" class="fa-solid fa-trash"></i></td>
+                                <td style="width: 5rem"><img class="img-fluid object-fit-cover rounded" src="{{ item.product.image.url }}" alt=""></td>
+                                <td>{{item.product.title }}</td>
+                                <td>Rp. {{item.product.price | intcomma}}</td>
+                                <td><input style="width: 4rem" min=0 class="form-control" type="number" value={{item.quantity}} name="item-quantity" data-item-id="{{item.id}}"></td>
+                                <td>Rp. {{item.total_itemprice | intcomma}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+            
+                </table>
+            </div>
+        </div>
+        <div id="section-total"style="height: 16rem"class="col-md-4 d-flex flex-column position-relative">
+            <div class="border p-3">
+                <table name="table-totals" class='table-borderless w-100 mb-auto'>
+                    <thead>
+                        <tr>
+                            <th class='p-2'>Total Belanja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="height: 10px;">
+                            <td style="color: gray" class='p-2 fw-bold'><span>subtotal</span> <span style="float: right;">Rp. {{cart.subtotal | intcomma}}</span></td>
+                        </tr>
+                        <tr style="height: 10px;">
+                            <td style="color: gray" class='p-2 fw-bold'><span>Pengiriman</span> <span style="float: right;">{{cart.subtotal}}</span></td>
+                        </tr>
+                        <tr style="height: 10px;">
+                            <td style="color: gray" class='p-2 fw-bold'><span>Total</span> <span style="float: right;">{{cart.subtotal | intcomma}}</span></td>
+                        </tr>                    
+                    </tbody>
+                </table>
+                <div>
+                    <a class="btn btn-dark rounded-0 w-100 fw-bold" href="">Pembayaran</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        
+    {% endif %}
+</div>
+{% endblock content %}
+
+{% block customscript %}
+    <script type="text/javascript">
+        let ajaxTimeout
+
+        $(document).on("input",'input[name="item-quantity"]', function() {
+            if(this.value < 0) {
+                this.value = 0
+                if(ajaxTimeout) {
+                    clearTimeout(ajaxTimeout)
+                }
+                return
+            } 
+            if(ajaxTimeout) {
+                clearTimeout(ajaxTimeout)
+            }
+            let spinner =
+            `<div class="spinner-overlay d-flex justify-content-center align-items-center">
+                <div class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+                </div>
+            </div>`
+            let alert_success = 
+            `
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-check me-3"></i>
+                <div>
+                    Keranjang diperbarui
+                </div>
+            </div>
+            `
+
+            let id = $(this).data('item-id')
+            let new_q = this.value
+
+            ajaxTimeout = setTimeout(function() {
+                $('table[name="table-items"]').append(spinner)
+                $('table[name="table-totals"]').append(spinner)
+                $.ajax({
+                    type : "POST",
+                    url : "{% url 'cart:change-quantity' %}",
+                    data: {"new_q" : new_q.toString(), "id" : id, "csrfmiddlewaretoken": "{{ csrf_token }}"},
+                    success: function() {
+                        $.ajax({
+                            type: 'GET',
+                            url: "{% url 'cart:update-cart-overall' %}",
+                            success: function (res) {
+                                b = res
+                                $('.spinner-overlay').remove();
+                                $("#cart-canvas").html(res.side_cart);
+                                $("table[name='table-items']").replaceWith(res.table_items);
+                                $("table[name='table-totals']").replaceWith(res.table_totals);
+                                $("#row-alert-success").html(alert_success)
+                            },
+                            error: function() {
+                                console.log("gagal")
+                            }
+                        })
+                    },
+                    error: function(e) {
+
+                    }
+                })
+            }, 2000);
+        })
+
+        function cartDeleteItem() {
+            let spinner =
+            `<div class="spinner-overlay d-flex justify-content-center align-items-center">
+                <div class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+                </div>
+            </div>`
+            let alert_success = 
+            `
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-check me-3"></i>
+                <div>
+                    Keranjang diperbarui
+                </div>
+            </div>
+            `
+
+            $('table[name="table-items"]').append(spinner)
+            $('table[name="table-totals"]').append(spinner)
+
+            $.ajax({
+              type: 'POST',
+              url: "{% url 'cart:delete-item' %}",
+              data: {
+                "prod_id": product_id,
+                "rndr_all": "true",
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+              },
+              success: function() {
+                console.log("data berhasil di hapus");
+                renderCart();
+                renderCartCount()
+                $("#loader").remove()
+              },
+              error: function() {
+                console.log("data gagal dihapus");
+                renderCart();
+                $("#loader").remove()
+              }
+            })
+        }
+    </script>
+{% endblock customscript %}

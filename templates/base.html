@@ -12,45 +12,57 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans+Condensed:wght@200..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         {% load static %}
         {% load humanize %}
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <link rel="stylesheet" href="{% static 'css/spinner.css' %}">
     </head>
-    <body>
+    <body id="body-website">
       
       <header>
-        <nav class="navbar p-3 shadow fixed-top navbar-expand-lg bg-light">
-          <div class="container-fluid">
-            <a class="navbar-brand" href={% url 'index' %}>Fetishia.store</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                  <a class="nav-link" aria-current="page" href="{% url 'products:index' %}">Products</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Features</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Pricing</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown link
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-                </li>
-              </ul>
+        <nav class="navbar bg-body-tertiary fixed-top shadow py-3">
+          <div class="container-fluid d-flex justify-content-between align-items-center ms-5">
+            <!-- Left side: Brand -->
+            <a class="navbar-brand" href="{% url 'index' %}">fetishia.store</a>
+        
+            <!-- Right side: Links (Product & Testing) -->
+            <div class="d-flex ms-auto me-3">
+              <a class="nav-link me-3" href="{% url 'products:index' %}"><h6 class="m-0">Product</h6></a>
+              <a class="nav-link" href="{% url 'products:index' %}"><h6 class="m-0">Testing</h6></a>
+              <div class="mx-3">
+                <a class="nav-link" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                  <i style="cursor: pointer"class="fa-solid fa-cart-shopping fa-lg"></i>
+                    {% if cart.quantity == 0 %}
+                    <span class='badge badge-warning' id='lblCartCount'></span>
+                    {% else %}
+                    <span class='badge badge-warning' id='lblCartCount'>{{cart.quantity}}</span>
+                    {% endif %}
+                </a>
+              </div>
+              
+              <a href="{% url 'user-auth' %}" class="nav-link ms-3">
+                {% if user.is_authenticated %}
+                <span>Halo, {{user.first_name}}</span>
+                
+                {% endif %}
+                <i class=" ms-2 fa-user fa-regular fa-lg"></i>
+              </a>
+            </div>        
+          </div>        
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Keranjang</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>              
+            </div>
+            <div id="cart-canvas" class="offcanvas-body">
             </div>
           </div>
         </nav>
-        </header>
+        
+        
+        
+      </header>
 
         <main style='padding-top: 100px; font-family: reddit sans condensed'>
           {% block content %}
@@ -59,7 +71,98 @@
         
         {% load static %}
         <script src="{% static 'js/jquery.min.js' %}"> </script>
+        <script type="text/javascript">
+          $(document).ready( function() {
+            renderCart()
+          })
+          function renderCart(){
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'cart:select-cart-component' %}",
+                success: function (res) {
+                    $("#cart-canvas").html(res)
+                },
+                error: function() {
+                    console.log("gagal")
+                }
+            })
+          }
+
+          function renderCartCount() {
+            $.ajax({
+              type: 'GET',
+              url: "{% url 'cart:get-quantity' %}",
+              success: function (res) {
+                console.log("this works : ", res)
+
+                if (res['q'] ==  0) {
+                  $("#lblCartCount").hide()
+                } else {
+                  $("#lblCartCount").show()
+                  $("#lblCartCount").html(res['q'])
+                }
+
+              },
+              error: function() {
+                  console.log("gagal")
+              }
+          })
+          }
+          {% comment %} 
+          
+            MENDING BUAT COMPONENT LAGI, TAPI KALI INI MASUKAN KE CONTEXT AJA, KAN BISA
+          {% endcomment %}
+          function deleteItem(product_id) {
+            $("#body-website").prepend(`<div id="loader" class="loading">Loading&#8230;</div>`)
+            $.ajax({
+              type: 'POST',
+              url: "{% url 'cart:delete-item' %}",
+              data: {
+                "prod_id": product_id,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+              },
+              success: function() {
+                console.log("data berhasil di hapus");
+                renderCart();
+                renderCartCount()
+                $("#loader").remove()
+              },
+              error: function() {
+                console.log("data gagal dihapus");
+                renderCart();
+                $("#loader").remove()
+              }
+            })
+          }
+
+          function addToCart(product_id, comp) {
+            $(comp).html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...`)
+            $.ajax({
+                type: "POST",
+                url: "{% url 'cart:cart-insert' %}",
+                data: {
+                    "prod_id": product_id,
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                success: function() {
+                    a = comp
+                    $(comp).html('Tambah ke Keranjang <i class="fa-solid fa-check"></i>');
+                    $(comp).siblings().remove('a')
+                    $(comp).parents('div[name="product-card"]')
+                    .append('<a style="cursor:pointer"data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation"><p class="text-danger">Lihat Keranjang </p></a>')
+                    renderCart();
+                    renderCartCount();
+                },
+                error: function(e) {
+                    $(comp).html('Tambah ke Keranjang')
+                    renderCart()
+                }
+            });
+        }
+
+        </script>
         {% block customscript %}{% endblock customscript %}
+        
         <script src="" async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>

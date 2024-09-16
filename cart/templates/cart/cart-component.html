@@ -1,0 +1,39 @@
+{% if cart.cart %}
+<div id="cart-component" class="container px-4">
+    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        {% load humanize %}
+         {% for item in cart.cart %}      
+        <li class="nav-item">     
+          <div class="row">
+            <div class="col">
+              <img class="img-fluid object-fit-cover rounded" style="width: 8rem; height: 12 rem;" src="{{ item.product.image.url }}" alt="">
+            </div>
+            <div class="col">
+              <p class="align-self-start"style="font-family: reddit sans condensed">{{item.product.title}}</p>
+              <span class="ms-auto">{{item.quantity}} x Rp {{item.product.price|intcomma}}</span> 
+              <span onclick="deleteItem({{item.id}})"class="float-end"><i class="fa-solid fa-ban"></i></span>
+            </div>                    
+          </div>  
+          <hr>           
+        </li>
+         {% endfor %}      
+      </ul>
+      <div class="row text-center my-3">
+        <h5>Subtotal : <span class='fw-normal'>{{cart.subtotal|intcomma}}</span></h5>
+
+      </div>
+      <div class="row text-center">
+        <div class="col">
+          <a href="{% url 'cart:select-cart' %}" class="btn btn-dark rounded-0 w-100 fw-bold mb-2">Lihat Keranjang</a>
+          <a href="{% url 'cart:select-cart' %}" class="btn btn-primary rounded-0 w-100 fw-bold">Pembayaran</a>
+        </div>        
+      </div>
+      {% comment %} {% else %}
+      <h1>{{cart.cart.session_key}}</h1> {% endcomment %}
+      {% load static %}
+
+</div>
+{% else %}
+  <img class="img-fluid object-fit-cover"src="{% static 'images/cart_empty.png' %}" alt="">
+  <h4 class="text-center">Keranjang Anda Kosong</h4>
+{% endif %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock%}
+
+{% block content %}
+
+<div class="container custom-container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4 class="py-5">Masuk</h4>        
+            <div style="height: 18rem"class="border p-5">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button style="width: 6rem;" type="submit" class="btn btn-dark rounded-0">Login</button>
+                </form>
+            </div>
+            {% if forms.errors %}
+                <p>Username atau password yang anda masukan salah</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+                        
+            <h4 class="py-5">Registrasi</h4>
+            <div style="height: 18rem"class="border p-5">
+                <p>Data pribadi Anda akan digunakan untuk menunjang pengalaman Anda di seluruh situs web ini, untuk mengelola akses ke akun Anda, dan untuk tujuan lain yang dijelaskan dalam kebijakan privasi kami.</p>
+                <a style="width: 6rem;"href="{% url 'user-registration' %}" class="btn btn-dark rounded-0">Registrasi</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
