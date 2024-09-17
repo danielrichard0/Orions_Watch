@@ -38,9 +38,9 @@
                     <tbody>
                         {% for item in cart.cart %}
                             <tr>
-                                <td style="width: 3rem; cursor: pointer;"><i onclick="deleteItem({{item.id}})" class="fa-solid fa-trash"></i></td>
+                                <td style="width: 3rem; cursor: pointer;"><i onclick="cartDeleteItem({{item.id}}, this)" class="fa-solid fa-trash" data-product-title="{{item.product.title}}"></i></td>
                                 <td style="width: 5rem"><img class="img-fluid object-fit-cover rounded" src="{{ item.product.image.url }}" alt=""></td>
-                                <td>{{item.product.title }}</td>
+                                <td name="product-title">{{item.product.title }}</td>
                                 <td>Rp. {{item.product.price | intcomma}}</td>
                                 <td><input style="width: 4rem" min=0 class="form-control" type="number" value={{item.quantity}} name="item-quantity" data-item-id="{{item.id}}"></td>
                                 <td>Rp. {{item.total_itemprice | intcomma}}</td>
@@ -89,6 +89,7 @@
         let ajaxTimeout
 
         $(document).on("input",'input[name="item-quantity"]', function() {
+            
             if(this.value < 0) {
                 this.value = 0
                 if(ajaxTimeout) {
@@ -130,7 +131,6 @@
                             type: 'GET',
                             url: "{% url 'cart:update-cart-overall' %}",
                             success: function (res) {
-                                b = res
                                 $('.spinner-overlay').remove();
                                 $("#cart-canvas").html(res.side_cart);
                                 $("table[name='table-items']").replaceWith(res.table_items);
@@ -149,7 +149,9 @@
             }, 2000);
         })
 
-        function cartDeleteItem() {
+        function cartDeleteItem(product_id, el) {
+            let title= $(el).data('product-title')
+            console.log(title)
             let spinner =
             `<div class="spinner-overlay d-flex justify-content-center align-items-center">
                 <div class="spinner-grow" role="status">
@@ -161,7 +163,7 @@
             <div class="alert alert-success d-flex align-items-center" role="alert">
                 <i class="fa-solid fa-check me-3"></i>
                 <div>
-                    Keranjang diperbarui
+                    Product "${title}" telah dihapus
                 </div>
             </div>
             `
@@ -177,16 +179,15 @@
                 "rndr_all": "true",
                 "csrfmiddlewaretoken": "{{ csrf_token }}"
               },
-              success: function() {
-                console.log("data berhasil di hapus");
-                renderCart();
-                renderCartCount()
-                $("#loader").remove()
+              success: function(res) {
+                $('.spinner-overlay').remove();
+                $("#cart-canvas").html(res.side_cart);
+                $("table[name='table-items']").replaceWith(res.table_items);
+                $("table[name='table-totals']").replaceWith(res.table_totals);
+                $("#row-alert-success").html(alert_success)
               },
               error: function() {
                 console.log("data gagal dihapus");
-                renderCart();
-                $("#loader").remove()
               }
             })
         }

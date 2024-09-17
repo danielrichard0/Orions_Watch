@@ -14,9 +14,9 @@
         <tbody>
             {% for item in cart.cart %}
                 <tr>
-                    <td style="width: 3rem; cursor: pointer;"><i onclick="deleteItem({{item.id}})" class="fa-solid fa-trash"></i></td>
+                    <td style="width: 3rem; cursor: pointer;"><i onclick="cartDeleteItem({{item.id}}, this)" class="fa-solid fa-trash" data-product-title="{{item.product.title}}"></i></td>
                     <td style="width: 5rem"><img class="img-fluid object-fit-cover rounded" src="{{ item.product.image.url }}" alt=""></td>
-                    <td>{{item.product.title }}</td>
+                    <td name="product-title">{{item.product.title }}</td>
                     <td>Rp. {{item.product.price | intcomma}}</td>
                     <td><input style="width: 4rem" min=0 class="form-control" type="number" value={{item.quantity}} name="item-quantity" data-item-id="{{item.id}}"></td>
                     <td>Rp. {{item.total_itemprice | intcomma}}</td>

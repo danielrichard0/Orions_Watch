@@ -59,10 +59,14 @@ def change_quantity(request):
         item_id = request.POST.get('id')
         new_q = request.POST.get('new_q')
 
-        their_item = get_object_or_404(Cart, pk=item_id)
-        their_item.quantity = new_q
+        their_item = Cart.objects.get(pk=item_id)
 
-        their_item.save()
+        if int(new_q) < 1:
+            their_item.delete()
+        else :
+            their_item.quantity = new_q
+            their_item.save()
+        
         return HttpResponse("Keranjang diperbarui")
     else:
         return HttpResponse("Invalid request method")
@@ -84,6 +88,7 @@ def delete_item(request):
         cart.delete()
 
         if render_all:
+            print("executed")
             side_cart = render(request, 'cart/cart-component.html').content.decode('utf-8')
             table_items = render(request, 'cart/table-items-component.html').content.decode('utf-8')
             table_totals = render(request, 'cart/table-totals-component.html').content.decode('utf-8')
@@ -93,7 +98,7 @@ def delete_item(request):
                 'table_items' : table_items,
                 'table_totals' : table_totals 
             })
-        
+
         return HttpResponse("data berhasil di hapus")
     else:
         return HttpResponse("Invalid request method")
@@ -103,4 +108,8 @@ def select_cart(request):
         return render(request, 'cart/select-cart.html')
     else:
         return HttpResponse("invalid request method")
+    
+def transaction(request):
+    if request.method == 'GET':
+        pass
 
