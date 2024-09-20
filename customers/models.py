@@ -6,6 +6,14 @@ class Province(models.Model):
 
     def __str__(self):
         return self.name
+    def get_province_choices(self):
+        provinces = Province.objects.all()
+        prv_choices = [('', 'Pilih Provinsi')]
+        for prv in provinces:
+            prv_choices.append((prv.id, prv.name))
+
+        return prv_choices
+        
     
 class City(models.Model):
     name = models.CharField('Nama Kabupaten/Kota', max_length=150)

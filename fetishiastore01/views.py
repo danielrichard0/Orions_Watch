@@ -41,7 +41,7 @@ def custom_registration_view(request):
     if request.method == 'POST':
         form = CustomRegistrationForm(request.POST)
         if form.is_valid():
-            input_email = form.cleaned_data['email']
+            # input_email = form.cleaned_data['email']
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
@@ -51,6 +51,7 @@ def custom_registration_view(request):
         form = CustomRegistrationForm()
     return render(request, 'registration-page.html', {'form': form})
 
+    
 def logout_view(request):
     logout(request)
     return redirect('/')

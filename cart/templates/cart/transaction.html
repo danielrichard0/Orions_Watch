@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock%}
+
+{% block content %}
+
+<div class= "container custom-container">
+    <h6>Beranda/Bayar</h6>
+
+    <div class='row'>
+        <div class='col-md-7'>
+            <div class="border px-5 py-2 mb-3">
+                <p class="m-0">sudah punya akun?</p>
+            </div>
+            <div class="border p-5">
+                <form id="order" method='POST'>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class='col'>
+                            <label for="id_first_name">Nama Depan <span style="color: red">* </span>: </label>
+                            {{form.first_name}}
+                        </div>
+                        <div class="col">
+                            <label for="id_last_name">Nama Belakang : <span style="color: red">* </span></label>
+                            {{form.last_name}}
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <label for="id_email">Email : <span style="color: red">* </span></label>
+                            {{form.email}}
+                        </div>
+                    </div>
+    
+                    <div class="row mt-3">
+                        <div class="row">
+                            <div class='col'>
+                                <p>Alamat Tujuan</p>
+                                <label for="id_province">Provinsi : <span style="color: red">* </span></label>
+                                {{form.province}}
+                            </div>
+    
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <label for="id_city">Kota/Kabupaten : <span style="color: red">* </span></label>
+                            {{form.city}}
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <label for="id_district">Kecamatan : <span style="color: red">* </span></label>
+                            {{form.district}}
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <label for="id_village">Desa : </label>
+                            {{form.village}}
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <label for="id_address">Email : <span style="color: red">* </span></label>
+                            {{form.address}}
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <label for="id_post_code">Kode Pos : <span style="color: red">* </span></label>
+                            {{form.post_code}}
+                        </div>
+                    </div>
+                
+            </div>
+            <div class="border px-5 py-3 mt-3">
+                <p class="m-0 fw-bold mb-5">Informasi Tambahan</p>
+                <label class="fw-light mb-2"for="id_additional_information">Catatan order (opsional)</label>
+                {{form.additional_info}}
+            </form>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class='border px-5 py-3'>
+                <h6>Pesanan Anda</h6>
+                <table class="table">
+                    <thead>
+                        <th>Produk</th>
+                        <th>Subtotal</th>
+                    </thead>
+                    {% load humanize %}
+                    <tbody>
+                        {% for item in cart.cart %}
+                        <tr>
+                            <td class="fw-light">{{item.product.title}} x {{item.quantity}}</td>
+                            <td class="fw-light">Rp. {{item.total_itemprice | intcomma}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tr>
+                        <td>total</td>
+                        <td>Rp. {{cart.subtotal|intcomma}}</td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="border mt-3 p-4">
+                <label>Transfer bank langsung</label>
+                <div style="background-color: rgb(245, 245, 245)"class="p-2 mt-2">
+                    <p style="font-size: 14px; color: gray">Lakukan pembayaran Anda langsung ke rekening bank kami. Silakan gunakan ID Pesanan Anda sebagai referensi pembayaran. Pesanan Anda tidak akan dikirim sampai dana telah berhasil diterima di rekening kami</p>
+                </div>
+                <p  class="mt-3"style= "font-size: 14px">
+                    Data pribadi Anda akan digunakan untuk memproses pesanan Anda, menunjang pengalaman Anda di seluruh situs web ini, dan untuk tujuan lain yang dijelaskan dalam kebijakan privasi kami.
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label style="font-size: 14px" class="form-check-label" for="flexCheckDefault">
+                        Saya telah membaca dan setuju dengan syarat dan ketentuan yang berlaku pada website ini
+                    </label>
+                </div>
+                <button type="submit" form="order" class="btn btn-dark rounded-0 w-100 mt-4">Buat Pesanan</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content%}
+
+{% block customscript %}
+<script type='text/javascript'>
+    $(document).on("change",'select[name="province"]', function() {
+        let id = $(this).val()
+        if (id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'cart:select-city' %}",
+                data: {'province_id' : id},
+                success: function(res) {
+                    let select = $("select[name='city']")
+                    $("select[name='district']").html('')
+                    $("select[name='village']").html('')
+                    select.html('')
+                    
+                    $(res.cities).each(function (i, val) {                    
+                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                    })
+                }
+            })
+        }        
+    })
+
+    $(document).on("change",'select[name="city"]', function() {
+        let id = $(this).val()
+        if (id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'cart:select-district' %}",
+                data: {'city_id' : id},
+                success: function(res) {
+                    let select = $("select[name='district']")
+                    $("select[name='village']").html('')
+                    select.html('')
+
+                    $(res.districts).each(function (i, val) {                    
+                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                    })
+                }
+            })
+        }        
+    })
+
+    $(document).on("change",'select[name="district"]', function() {
+        let id = $(this).val()
+        if (id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'cart:select-village' %}",
+                data: {'district_id' : id},
+                success: function(res) {
+                    let select = $("select[name='village']")
+                    select.html('')
+                    
+                    $(res.villages).each(function (i, val) {                    
+                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                    })
+                }
+            })
+        }        
+    })
+
+    
+    
+</script>
+
+
+{% endblock customscript %}

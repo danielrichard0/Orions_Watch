@@ -4,6 +4,8 @@ from .models import Cart
 from products.models import Product
 from django.shortcuts import render, get_object_or_404
 from .cart import CartProcessor
+from .forms import TransactionForm
+from customers.models import City, District, Villages
 
 # Create your views here.
 def insert_cart(request):
@@ -110,6 +112,55 @@ def select_cart(request):
         return HttpResponse("invalid request method")
     
 def transaction(request):
-    if request.method == 'GET':
-        pass
+    if request.method == 'POST':
+        
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            print("formulir : ", form.cleaned_data)
+            return HttpResponse("Testing saja")
+    else : 
+        form = TransactionForm()
+    return render(request, 'cart/transaction.html', {'form' : form})
+
+def select_city(request):
+
+    if request.method == "GET":
+        prov = request.GET.get('province_id')
+        if prov:
+            cities = City.objects.filter(province_id=prov)
+            cities = list(cities.values('id', 'name'))
+            return JsonResponse({"cities" : cities})
+        else:
+            return HttpResponse("Gagal")
+
+    else:
+        return HttpResponse("invalid request method")
+    
+def select_district(request):
+    if request.method == "GET":
+        city = request.GET.get('city_id')
+        if city:
+            districts = District.objects.filter(city_id=city)
+            districts = list(districts.values('id', 'name'))
+            return JsonResponse({"districts" : districts})
+        else:
+            return HttpResponse("Gagal")
+
+    else:
+        return HttpResponse("invalid request method")
+    
+def select_village(request):
+    if request.method == "GET":
+        district = request.GET.get('district_id')
+        if district:
+            villages = Villages.objects.filter(district_id=district)
+            villages = list(villages.values('id', 'name'))
+            return JsonResponse({"villages" : villages})
+        else:
+            return HttpResponse("Gagal")
+
+    else:
+        return HttpResponse("invalid request method")
+    
+
 
