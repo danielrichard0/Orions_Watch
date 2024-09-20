@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock%}
+
+{% block content %}
+<div class="container custom-container">
+    <h6>Beranda/Bayar/Pesanan</h6>
+
+    <div class='row'>
+        <div class="col">
+            <p>Terimakasih Pesanan Anda Telah Diterima</p>
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item fw-light">Nomor Pesanan <p class="fw-bold">{{order.id}}</p></li>
+                <li class="list-group-item fw-light">Tanggal <p class='fw-bold'>{{order.date_created}}</p></li>
+                <li class="list-group-item fw-light">Total <p class="fw-bold">{{subtotal}}</p></li>
+                <li class="list-group-item fw-light">Metode Pembayaran <p class="fw-bold">Transfer Bank</p></li>
+              </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <h4>
+                Detail Bank Kami
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h6>
+                Daniel Richardo
+            </h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item fw-light">BANK <p class="fw-bold">BCA</p></li>
+                <li class="list-group-item fw-light">NOMOR REKENING <p class="fw-bold">3930810176</p></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <h4>
+                Rincian Pesanan 
+            </h4>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-8">
+            <h6>
+                <table class="table" >
+                    <thead>
+                        <tr>
+                            <th>Produk</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% load humanize %}
+                        {% for item in products %}
+                        <tr>
+                            <td> {{item.product.title}} x {{item.quantity}} </td>
+                            <td> Rp. {{item.total_itemprice | intcomma}}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Subtotal</td>
+                            <td>Rp. {{subtotal | intcomma}}</td>
+                        </tr>
+                        <tr>
+                            <td>Metode</td>
+                            <td>Transfer Bank</td>
+                        </tr>
+                        <tr>
+                            <td>Catatan</td>
+                            <td>{% if order.cust_note %}{{order.cust_note}} {% else %} - {% endif %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </h6>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class='col'>
+            <h4>Alamat Penagihan</h4>            
+        </div>
+    </div>
+    <div class="border p-5">
+        <div class="row">
+            <span class='col'>
+                <p class="m-0">{{order.first_name}} {{order.last_name}}</p>
+                <p class="m-0">{{order.address.alamat}}</p>
+                <p class="m-0">{{order.address.village.name | title}}</p>
+                <p class="m-0">{{order.address.district.name | title}}</p>
+                <p class="m-0">{{order.address.city.name | title}}</p>
+                <p class="m-0">{{order.address.province.name | title}}</p>
+                <p class="m-0">{{order.address.cust_note }}</p>
+                <span><i class="fas fa-envelope mr-5"></i> {{order.email}}</span>
+            </span>
+        </div>
+    </div>
+
+    
+</div>
+{% endblock content%}
+

@@ -16,7 +16,12 @@ class CartProcessor():
         elif request.session.session_key:
             identifier =  {"session_id" : request.session.session_key}
 
-        self.cart = Cart.objects.filter(**identifier)
+        self.cart = Cart.objects.filter(**identifier, order_id__isnull=True)
         if self.cart.exists():
             self.subtotal = self.cart.aggregate(total=Sum(F('product__price') * F('quantity')))['total']
             self.quantity = self.cart.all().count()
+
+    def commit_order(self, order_id):
+        if self.cart :
+            self.cart.update(order=order_id)
+            return {"status":True , "order_products" : self.cart}

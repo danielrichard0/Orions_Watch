@@ -2,8 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import Cart
 from products.models import Product
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from .cart import CartProcessor
+from .forms import TransactionForm
+from customers.models import City, District, Villages
+from orders.models import Order
+from django.contrib.sessions.models import Session
+from django.db.models import Sum, F
+from urllib.parse import urlencode
 
 # Create your views here.
 def insert_cart(request):
@@ -14,9 +21,11 @@ def insert_cart(request):
         if request.user.is_authenticated:
             user_identifier = {'user_id': request.user.id}
         else :
-            user_identifier = {'session_id': request.session.session_key}
+            ses_mod = get_object_or_404(Session, session_key=request.session.session_key)
+            user_identifier = {'session' : ses_mod}
 
-        cart_item, created = Cart.objects.get_or_create(product=product, defaults={'quantity':1}, **user_identifier) 
+
+        cart_item, created = Cart.objects.get_or_create(product=product, defaults={'quantity':1}, order_id__isnull=True,**user_identifier) 
         if not created:
             cart_item.quantity += 1
             cart_item.save()
@@ -109,7 +118,98 @@ def select_cart(request):
     else:
         return HttpResponse("invalid request method")
     
-def transaction(request):
-    if request.method == 'GET':
-        pass
+def make_order(request):
+    if request.method == 'POST':
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            address = form.save()
+            address_id = address.id
+
+            clean_data = form.cleaned_data 
+            cust_note = clean_data.get('cust_note')
+            first_n = clean_data.get('first_name')
+            last_n = clean_data.get('last_name')
+            email = clean_data.get('email')
+
+            make_order = Order(
+                address_id=address_id,
+                is_guest=False,
+                cust_note=cust_note, 
+                first_name=first_n, 
+                last_name=last_n,
+                email=email
+                )
+            
+            make_order.save()
+            
+            cart = CartProcessor(request)
+            commit_ord = cart.commit_order(make_order.id)
+            if(commit_ord['status']):
+                ord_id = int(make_order.id) 
+                ord_key = make_order.token
+                
+                query_param = {"q" : ord_id, "token" : ord_key}
+                base_url = reverse('cart:checkout-order')
+                full_url = f"{base_url}?{urlencode(query_param)}"
+                
+                return redirect(full_url)
+            else:
+                return HttpResponse("Gagal")
+    else:
+        form = TransactionForm()
+    return render(request, 'cart/transaction.html', {"form" : form})
+
+def order_details(request):
+    ord_id = request.GET.get('q')
+    token = request.GET.get('token')
+
+    if not ord_id or not token:
+        return HttpResponse("Pesanan tidak ada")
+
+    order = get_object_or_404(Order, pk=ord_id, token=token)
+    products = Cart.objects.filter(order=order)
+    subtotal = products.aggregate(total=Sum(F('product__price') * F('quantity')))['total']
+    return render(request, 'cart/order-details.html', {'order' : order, 'products' : products, 'subtotal' : subtotal})
+
+def select_city(request):
+
+    if request.method == "GET":
+        prov = request.GET.get('province_id')
+        if prov:
+            cities = City.objects.filter(province_id=prov)
+            cities = list(cities.values('id', 'name'))
+            return JsonResponse({"cities" : cities})
+        else:
+            return HttpResponse("Gagal")
+
+    else:
+        return HttpResponse("invalid request method")
+    
+def select_district(request):
+    if request.method == "GET":
+        city = request.GET.get('city_id')
+        if city:
+            districts = District.objects.filter(city_id=city)
+            districts = list(districts.values('id', 'name'))
+            return JsonResponse({"districts" : districts})
+        else:
+            return HttpResponse("Gagal")
+
+    else:
+        return HttpResponse("invalid request method")
+    
+def select_village(request):
+    if request.method == "GET":
+        district = request.GET.get('district_id')
+        if district:
+            villages = Villages.objects.filter(district_id=district)
+            villages = list(villages.values('id', 'name'))
+            return JsonResponse({"villages" : villages})
+        else:
+            return HttpResponse("Gagal")
+
+    else:
+        return HttpResponse("invalid request method")
+    
+
 
