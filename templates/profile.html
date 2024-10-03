@@ -3,6 +3,47 @@
 {% endblock title %}
 
 {% block content %}
-<h1>Profile Login</h1>
-<a class="btn btn-dark" href="{% url 'logout' %}">Logout</a>
+<div class='container profile-container'>
+    <div class="row">
+        <div style="font-size: 14px" class='col-3'>
+            <div id="dashboard-profile" style="color: rgb(87, 87, 87); background-color: rgb(245,245,245)"class="row mt-1 ">
+                <p class="m-2 fs">Dashboard</p>
+            </div>
+            <a href="{% url 'account-orders' %}">
+                <div id="pesanan-profile" style="color: rgb(87, 87, 87); background-color: rgb(245,245,245)"class="row mt-1">
+                    <p class="m-2 fs">Pesanan</p>
+                </div>
+            </a>
+
+            <div id="download-profile" style="color: rgb(87, 87, 87); background-color: rgb(245,245,245)"class="row mt-1">
+                <p class="m-2 fs">Download</p>
+            </div>
+            <a href="{% url 'account-address' %}">
+                <div id="alamat-profile" style="color: rgb(87, 87, 87); background-color: rgb(245,245,245)"class="row mt-1">
+                    <p class="m-2 fs">Alamat</p>
+                </div>
+            </a>
+
+            <div id="details-profile" style="color: rgb(87, 87, 87); background-color: rgb(245,245,245)"class="row mt-1">
+                <p class="m-2 fs">Detail Akun</p>
+            </div>
+            <div id="keluar" style="color: rgb(87, 87, 87); background-color: rgb(245,245,245)"class="row mt-1">
+                <p class="m-2 fs">Keluar</p>
+            </div>
+        </div>
+        <div class='col'>
+            <div class="border m-2 p-3">
+                {% block profile %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
+{% block customscript %}
+    {% comment %} <script type="text/javascript">
+        function AddressPage() {
+
+        }
+    </script> {% endcomment %}
+{% endblock customscript %}

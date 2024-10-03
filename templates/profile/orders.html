@@ -1,0 +1,35 @@
+{% extends "profile.html" %}
+{% block title %}
+{% endblock title %}
+
+{% block profile %}
+    {% if not orders %}
+        <p>Belum punya pesanan</p>
+    {% else %}
+        <table class='table'>
+            <thead>
+                <tr>
+                  <th scope="col">Pesanan</th>
+                  <th scope="col">Tanggal</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">Aksi</th>
+                </tr>
+              </thead>
+              {% load humanize %}
+              <tbody>
+                {% for ord in orders  %}
+                <tr>
+                    <td>{{ord.id}}</td>
+                    <td>{{ord.date_created}}</td>
+                    <td>{{ord.status}}</td>
+                    <td>Rp. {{ord.total_price | intcomma}}</td>
+                    <td><a href="{% url 'order-details' ord.id %}"class="btn btn-dark">Lihat</a></td>
+                    {% comment %} <a href="{% url 'products:product-details' product.slug %}"> {% endcomment %}
+                </tr>
+                {% endfor %}
+              </tbody>
+        </table>
+            <p>{{ord.first_name}}</p>
+    {% endif %}
+{% endblock profile %}

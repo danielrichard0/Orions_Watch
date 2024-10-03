@@ -74,7 +74,7 @@
         <script type="text/javascript">
           $(document).ready( function() {
             renderCart()
-          })
+          })  
           function renderCart(){
             $.ajax({
                 type: 'GET',
@@ -110,7 +110,6 @@
           }
           {% comment %} 
           
-            MENDING BUAT COMPONENT LAGI, TAPI KALI INI MASUKAN KE CONTEXT AJA, KAN BISA
           {% endcomment %}
           function deleteItem(product_id) {
             $("#body-website").prepend(`<div id="loader" class="loading">Loading&#8230;</div>`)

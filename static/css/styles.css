@@ -80,6 +80,10 @@
 }
 
 @media only screen and (min-width: 768px) {
+    .profile-container {
+        width: 40%
+    }
+
     .custom-container {
         width: 60%;
     }

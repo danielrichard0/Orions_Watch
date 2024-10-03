@@ -1,0 +1,15 @@
+{% extends "profile.html" %}
+{% block title %}
+{% endblock title %}
+
+{% block profile %}
+    <p style="font-size: 14px; color: rgb(120,120,120)" >Halo <strong>{{user.username}} </strong>(Bukan <strong> {{user.username}}</strong>?) <a style="color:red" href="{% url 'logout' %}">Keluar</a></p>
+
+    <p style="font-size: 14px">Dari dasbor akun Anda, Anda dapat melihat pesanan baru, mengelola alamat pengiriman dan penagihan, dan edit kata sandi dan detail akun Anda.</p>
+{% endblock profile%}
+
+{% block customscript %}
+    <script type="text/javascript">
+        $("#dashboard-profile").css("background-color", "rgb(225,225,225)")
+    </script>
+{% endblock customscript %}

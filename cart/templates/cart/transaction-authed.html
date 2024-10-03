@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class= "container custom-container">
+<div class= "container profile-container">
     <h6>Beranda/Bayar</h6>
 
     <div class='row'>
@@ -43,15 +43,6 @@
                             {{form.email}}
                             {% if form.email.errors %}
                                 {{form.email.errors}}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row my-2">
-                        <div class="col">
-                            <label for="id_phone_number">Nomor Telepon : <span style="color: red">* </span></label>
-                            {{form.phone_number}}
-                            {% if form.phone_number.errors %}
-                                {{form.phone_number.errors}}
                             {% endif %}
                         </div>
                     </div>
@@ -118,20 +109,6 @@
                             {% endif %}
                         </div>
                     </div>
-                    {% if request.user.is_authenticated %}
-                    <div class="row my-2">
-                        <div class="col">
-                            <div class="form-check">
-                                {{form.is_save}}
-                                <label class="form-check-label" for="id_is_save">Simpan Alamat? :</label>
-                                {% if form.is_save.errors %}
-                                    {{form.is_save.errors}} 
-                                {% endif %}
-                            </div>
-
-                        </div>
-                    </div>
-                    {% endif %}
                 
             </div>
             <div class="border px-5 py-3 mt-3">
@@ -162,12 +139,8 @@
                         {% endfor %}
                     </tbody>
                     <tr>
-                        <th>Ongkos Kirim</th>
-                        <td>Rp. 20.000</td>
-                    </tr>
-                    <tr>
-                        <th>total</th>
-                        <td>Rp. {{cart.total|intcomma}}</td>
+                        <td>total</td>
+                        <td>Rp. {{cart.subtotal|intcomma}}</td>
                     </tr>
 
                 </table>
@@ -186,7 +159,7 @@
                         Saya telah membaca dan setuju dengan syarat dan ketentuan yang berlaku pada website ini
                     </label>
                 </div>
-                <button id="submit-data"type="submit" form="order" class="btn btn-dark rounded-0 w-100 mt-4">Buat Pesanan</button>
+                <button type="submit" form="order" class="btn btn-dark rounded-0 w-100 mt-4">Buat Pesanan</button>
             </div>
         </div>
 
@@ -200,7 +173,6 @@
     $(document).ready(function () {
         $("#submit-data").attr("disabled", true)
     })
-
     $(document).on("change",'select[name="province"]', function() {
         let id = $(this).val()
         if (id) {
@@ -262,7 +234,7 @@
                 }
             })
         }        
-    })    
+    })
 
     $("#check-term").on("change", function () {
         if (this.checked) {
@@ -271,6 +243,9 @@
             $("#submit-data").attr("disabled", true)
         }
     })
+
+    
+    
 </script>
 
 

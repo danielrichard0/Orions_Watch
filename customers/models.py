@@ -6,7 +6,7 @@ class Province(models.Model):
 
     def __str__(self):
         return self.name
-    def get_province_choices(self):
+    def get_province_choices():
         provinces = Province.objects.all()
         prv_choices = [('', 'Pilih Provinsi')]
         for prv in provinces:
@@ -37,14 +37,17 @@ class Villages(models.Model):
         return self.name
    
 class Address(models.Model):
+    first_name = models.CharField('Nama Depan', max_length=50, null=True, blank=True)
+    last_name = models.CharField('Nama Belakang', max_length=50, null=True, blank=True)
+    email = models.CharField('Email', max_length=250, null=True, blank=True)
+    phone_number = models.CharField('Nomor Telpon', max_length=15, null=True, blank=True)
     province = models.ForeignKey(Province, null=False, blank=False, on_delete=models.RESTRICT)
     city = models.ForeignKey(City, null=False, blank=False, on_delete=models.RESTRICT)
     district = models.ForeignKey(District, null=False, blank=False, on_delete=models.RESTRICT)
     village = models.ForeignKey(Villages, null=False, blank=False, on_delete=models.RESTRICT)
     alamat = models.CharField('Alamat Kirim', max_length=250, null=False)
     post_code = models.CharField('Kode Pos', max_length=10, null=False)
-    cust_note = models.CharField('Catatan Pembeli', max_length=250, null=True, blank=True)
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, unique=True)
 
     
 

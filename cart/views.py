@@ -5,12 +5,16 @@ from products.models import Product
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from .cart import CartProcessor
-from .forms import TransactionForm
+from .forms import TransactionForm, AddressForm
 from customers.models import City, District, Villages
 from orders.models import Order
 from django.contrib.sessions.models import Session
 from django.db.models import Sum, F
 from urllib.parse import urlencode
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from customers.models import Address
 
 # Create your views here.
 def insert_cart(request):
@@ -96,8 +100,8 @@ def delete_item(request):
         cart = Cart.objects.get(**identifier)
         cart.delete()
 
+        # side cart, item dan total, 3 component harus diperbarui sehabis delete 
         if render_all:
-            print("executed")
             side_cart = render(request, 'cart/cart-component.html').content.decode('utf-8')
             table_items = render(request, 'cart/table-items-component.html').content.decode('utf-8')
             table_totals = render(request, 'cart/table-totals-component.html').content.decode('utf-8')
@@ -120,7 +124,9 @@ def select_cart(request):
     
 def make_order(request):
     if request.method == 'POST':
-        form = TransactionForm(request.POST)
+        form = TransactionForm(data=request.POST)
+        cart = CartProcessor(request)
+
         if form.is_valid():
             address = form.save()
             address_id = address.id
@@ -130,6 +136,11 @@ def make_order(request):
             first_n = clean_data.get('first_name')
             last_n = clean_data.get('last_name')
             email = clean_data.get('email')
+            is_save = clean_data.get('is_save')
+            user = None
+            
+            if request.user.is_authenticated:
+                user = User.objects.get(pk=request.user.id)
 
             make_order = Order(
                 address_id=address_id,
@@ -137,17 +148,57 @@ def make_order(request):
                 cust_note=cust_note, 
                 first_name=first_n, 
                 last_name=last_n,
-                email=email
+                email=email,
+                total_price=cart.subtotal,
+                total=cart.total,
+                user=user,
+                status='MK1',
+                ongkir=20000
                 )
             
-            make_order.save()
-            
-            cart = CartProcessor(request)
+            make_order.save()        
+            print("make order : ", make_order)
             commit_ord = cart.commit_order(make_order.id)
+            
             if(commit_ord['status']):
+                if request.user.is_authenticated : 
+                    address_dt = clean_data
+                    del address_dt['cust_note']
+                    del address_dt['is_save']
+                    try:
+                        Address.objects.update_or_create(
+                            user=request.user,
+                            defaults=address_dt
+                        )
+                    except:
+                        return HttpResponse("Gagal Banget")
+
                 ord_id = int(make_order.id) 
                 ord_key = make_order.token
+                products = Cart.objects.filter(order=ord_id)
+
+                context = {'order' : make_order}
+                txt_content = render_to_string(
+                    'cart/text-email.txt',
+                    context
+                )
+
+                html_content = render_to_string(
+                    'cart/email-template.html',
+                    context = {'order' : make_order, 'products' : products, 'address' : address }
+                )
+
+                msg = EmailMultiAlternatives(
+                    "Pesanan Anda Telah Kami Terima",
+                    txt_content,
+                    "admin@fetishia.store",
+                    [make_order.email],
+                )
+
                 
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+                            
                 query_param = {"q" : ord_id, "token" : ord_key}
                 base_url = reverse('cart:checkout-order')
                 full_url = f"{base_url}?{urlencode(query_param)}"
@@ -155,8 +206,16 @@ def make_order(request):
                 return redirect(full_url)
             else:
                 return HttpResponse("Gagal")
+        else:
+            print("the form : ", form.errors)
     else:
-        form = TransactionForm()
+        addr=None
+        if request.user.is_authenticated:
+            try :
+                addr = Address.objects.get(user=request.user)
+            except:
+                addr = None
+        form = TransactionForm(address=addr)
     return render(request, 'cart/transaction.html', {"form" : form})
 
 def order_details(request):
@@ -166,6 +225,7 @@ def order_details(request):
     if not ord_id or not token:
         return HttpResponse("Pesanan tidak ada")
 
+    # harusnya bisa dibawa dari cart
     order = get_object_or_404(Order, pk=ord_id, token=token)
     products = Cart.objects.filter(order=order)
     subtotal = products.aggregate(total=Sum(F('product__price') * F('quantity')))['total']

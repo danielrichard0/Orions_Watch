@@ -1,0 +1,62 @@
+{% extends "profile.html" %}
+{% block title %}
+{% endblock title %}
+
+{% block profile %}
+{% if order %}
+    {% load humanize %}
+    {% load static %}
+    <p>Pesanan {{order.id}} dilakukan pada {{order.date_created}} </p>
+    <h6>Status : <strong>{{order.status_display}}</strong></h6>
+    {% if order.status == 'MK1' %}
+    <p style="color: rgb(175,175,175); margin:0px">Jika dalam 2x24 jam pesanan belum di proses silahkan hubungi admin via WA berikut</p>
+    <img class="logo-wa pb-5" src="{% static 'images/wa_button.png' %}" alt=""> 
+    {% endif %}
+    <h3>Rincian Pesanan</h3>
+    <div class='border p-3 mb-3'>
+        <table class='table'>
+            <thead>
+                <th scope="col">Produk</th>
+                <th scope="col">Total</th>
+            </thead>
+            {% for item in products %}
+                <tr>
+                    <td>{{item.product.title}} x {{item.quantity}}</td>
+                    <td>Rp. {{item.total_itemprice | intcomma}} </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th>Subtotal</th>
+                <th>Rp. {{order.total_price | intcomma}}</th>
+            </tr>
+            {% if order.cust_note %}
+            <tr>
+                <td>Catatan pelanggan</th>
+                <td>{{order.cust_note}}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Metode Pembayaran</th>
+                <th>Transfer Bank Langsung</th>
+            </tr>
+        </table>
+    </div>
+    <div class="border p-5">
+        <div class="row">
+            <span class='col'>
+                <p class="m-0">{{order.first_name}} {{order.last_name}}</p>
+                <p class="m-0">{{order.address.alamat}}</p>
+                <p class="m-0">{{order.address.village.name | title}}</p>
+                <p class="m-0">{{order.address.district.name | title}}</p>
+                <p class="m-0">{{order.address.city.name | title}}</p>
+                <p class="m-0">{{order.address.province.name | title}}</p>
+                <span><i class="fas fa-envelope mr-5"></i> {{order.email}}</span>
+            </span>
+        </div>
+    </div>
+
+{% else %}
+<p>Pesanan tidak ditemukan</p>
+{% endif %}
+
+{% endblock profile%}

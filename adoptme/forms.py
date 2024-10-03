@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from customers.models import Address 
 
 class CustomLoginForm(forms.Form):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Username'}))
@@ -106,3 +107,5 @@ class CustomRegistrationForm(forms.ModelForm):
             raise forms.ValidationError("Password tidak cocok, silahkan ulangi kembali")
 
         return cleaned_data
+    
+

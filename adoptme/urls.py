@@ -28,6 +28,13 @@ urlpatterns = [
     path('login/', views.custom_login_view, name="user-auth" ),
     path('registration', views.custom_registration_view, name='user-registration'),
     path('admin/', admin.site.urls, name="admin-site"),
-    path('logout/', views.logout_view, name='logout')
+    path('logout/', views.logout_view, name='logout'),
+    path('account/',views.dashboard, name='account-dashboard'),
+    path('orders/',views.orders, name='account-orders'),
+    path('orders/<int:id>',views.order_detail, name='order-details'),
+    path('download/',views.download, name='account-download'),
+    path('address/',views.user_address, name='account-address'),
+    path("change-address", views.change_address, name="change-address"),
+    path('details/',views.details, name='account-details'),
     
 ] + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)

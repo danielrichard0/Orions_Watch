@@ -18,4 +18,4 @@ class Cart(models.Model):
         return self.product.price * self.quantity
 
     def __str__(self):
-        return self.session_id
+        return self.product.title

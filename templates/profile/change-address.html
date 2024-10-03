@@ -1,0 +1,177 @@
+{% extends "profile.html" %}
+{% block title %}
+{% endblock title %}
+
+{% block profile %}
+{% if form %}
+    <form id="order" method='POST'>
+        {% csrf_token %}
+        <div class="row">
+            <div class='col'>
+                <label for="id_first_name">Nama Depan <span style="color: red">* </span>: </label>
+                {{form.first_name}}
+                {% if form.first_name.errors %}
+                    {{form.first_name.errors}}
+                {% endif %}
+            </div>
+            <div class="col">
+                <label for="id_last_name">Nama Belakang : <span style="color: red">* </span></label>
+                {{form.last_name}}
+                {% if form.last_name.errors %}
+                    {{form.last_name.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_email">Email : <span style="color: red">* </span></label>
+                {{form.email}}
+                {% if form.email.errors %}
+                    {{form.email.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_phone_number">Nomor Telepon : <span style="color: red">* </span></label>
+                {{form.phone_number}}
+                {% if form.phone_number.errors %}
+                    {{form.phone_number.errors}}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="row">
+                <div class='col'>
+                    <p>Alamat Tujuan</p>
+                </div>
+
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_province">Provinsi : <span style="color: red">* </span></label>
+                {{form.province}}
+                {% if form.province.errors %}
+                    {{form.province.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_city">Kota/Kabupaten : <span style="color: red">* </span></label>
+                {{form.city}}
+                {% if form.city.errors %}
+                    {{form.city.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_district">Kecamatan : <span style="color: red">* </span></label>
+                {{form.district}}
+                {% if form.district.errors %}
+                    {{form.district.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_village">Desa : <span style="color: red">* </span></label></label>
+                {{form.village}}
+                {% if form.village.errors %}
+                    {{form.village.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_address">Alamat : <span style="color: red">* </span></label>
+                {{form.alamat}}
+                {% if form.alamat.errors %}
+                    {{form.alamat.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <label for="id_post_code">Kode Pos : <span style="color: red">* </span></label>
+                {{form.post_code}}
+                {% if form.post_code.errors %}
+                    {{form.post_code.errors}}
+                {% endif %}
+            </div>
+        </div>
+        <button class="btn btn-dark"type="submit">Simpan</button>
+    </form>
+{% endif %}
+{% endblock profile %}
+
+{% block customscript %}
+<script type='text/javascript'>
+    $(document).on("change",'select[name="province"]', function() {
+        let id = $(this).val()
+        if (id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'cart:select-city' %}",
+                data: {'province_id' : id},
+                success: function(res) {
+                    let select = $("select[name='city']")
+                    $("select[name='district']").html('')
+                    $("select[name='village']").html('')
+                    select.html('')
+
+                    select.append('<option selected value=""> Pilih Kota </option>')
+                    $(res.cities).each(function (i, val) {                    
+                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                    })
+                }
+            })
+        }        
+    })
+
+    $(document).on("change",'select[name="city"]', function() {
+        let id = $(this).val()
+        if (id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'cart:select-district' %}",
+                data: {'city_id' : id},
+                success: function(res) {
+                    let select = $("select[name='district']")
+                    $("select[name='village']").html('')
+                    select.html('')
+
+                    select.append('<option selected value=""> Pilih Kecamatan </option>')
+                    $(res.districts).each(function (i, val) {                    
+                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                    })
+                }
+            })
+        }        
+    })
+
+    $(document).on("change",'select[name="district"]', function() {
+        let id = $(this).val()
+        if (id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'cart:select-village' %}",
+                data: {'district_id' : id},
+                success: function(res) {
+                    let select = $("select[name='village']")
+                    select.html('')
+                    
+                    select.append('<option selected value=""> Pilih Desa/Kelurahan </option>')
+                    $(res.villages).each(function (i, val) {                    
+                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                    })
+                }
+            })
+        }        
+    })    
+</script>
+
+{% endblock customscript %}

@@ -1,0 +1,29 @@
+{% extends "profile.html" %}
+{% block title %}
+{% endblock title %}
+
+{% block profile %}
+    <p style="color: rgb(125,125,125)">Alamat berikut akan digunakan pada halaman checkout secara otomatis.</p>
+    <h3 class="mb-3">Alamat Penagihan</h3>
+    <div class="border p-5">
+        {% if context %}
+        
+        <a href="{% url "change-address" %}">Edit</a>
+        <div class="row">
+            <span class='col'>
+                <p class="m-0">{{context.first_name}} {{context.last_name}}</p>
+                <p class="m-0">{{context.alamat}}</p>
+                <p class="m-0">{{context.village.name | title}}</p>
+                <p class="m-0">{{context.district.name | title}}</p>
+                <p class="m-0">{{context.city.name | title}}</p>
+                <p class="m-0">{{context.province.name | title}}</p>
+                <p class="m-0">{{context.cust_note }}</p>
+                <span><i class="fas fa-envelope mr-5"></i> {{context.email}}</span>
+            </span>
+        </div>
+        {% else %}
+        <p class='m-0'>Anda belum melakukan set-up alamat</p>
+        <a class="btn btn-dark"href="{% url "change-address" %}">Tambah Alamat</a>
+        {% endif %}
+    </div>
+{% endblock profile %}
