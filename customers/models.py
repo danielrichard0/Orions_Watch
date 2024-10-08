@@ -47,7 +47,11 @@ class Address(models.Model):
     village = models.ForeignKey(Villages, null=False, blank=False, on_delete=models.RESTRICT)
     alamat = models.CharField('Alamat Kirim', max_length=250, null=False)
     post_code = models.CharField('Kode Pos', max_length=10, null=False)
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, unique=True)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        string = f"{self.alamat} \n{self.village} \n{self.district} \n{self.city} \n{self.province} \n{self.post_code}"
+        return string
 
     
 

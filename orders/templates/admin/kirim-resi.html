@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div style="padding: 5 rem; font-family: 'Roboto Condensed', Arial, sans-serif">
+        <div style="background-color: black; text-align: center; padding: 3rem">
+            <h1 style="margin: 0px; color:white">Pesanan Anda Sudah Dikirim</h1>
+        </div>
+        <div style="padding: 3rem; text-align:center">
+            <h4 style="color: gray">Nomor Resi / Agen Pengiriman</h4>
+            <h1>{{order.nomor_resi}} / JNE</h1>
+        </div>
+        <div style="padding-left: 3rem; padding-right: 3rem;">
+            <p style="margin: 0px">Halo {{order.first_name}} {{order.last_name}}</p>
+            <p>Terimakasih sudah berbelanja di Fetishia.store</p>
+            <h3>Kami sudah mengirimkan produk yang anda pesan. harap tunggu sampai pesanan anda sampai ke tujuan. apabila terdapat pertanyaan dapat kirimkan ke kontak dibawah</h3>
+        </div>
+        <div style="padding-right: 3rem; padding-left: 3rem; margin:auto">
+            <h3>[Pesanan {{order.id}}] ({{order.date_created}})</h3>
+            <table style="border: 1px solid black; border-collapse: collapse">
+                <thead>
+                    <th style="border: 1px solid black; border-collapse: collapse">Produk</th>
+                    <th style="border: 1px solid black; border-collapse: collapse">Jumlah</th>
+                    <th style="border: 1px solid black; border-collapse: collapse">Harga</th>
+                </thead>
+                {% load humanize %}
+                <tbody>
+                    {% for item in products %}
+                    <tr>
+                        <td style="border: 1px solid black; border-collapse: collapse">{{item.product.title}}</td>
+                        <td style="border: 1px solid black; border-collapse: collapse">{{item.quantity}}</td>
+                        <td style="border: 1px solid black; border-collapse: collapse">Rp. {{item.total_itemprice | intcomma}}</td>
+                    </tr>                 
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th style="border: 1px solid black; border-collapse: collapse">Subtotal</th>
+                        <td colspan=2 style="border: 1px solid black; border-collapse: collapse">Rp. {{order.total_price | intcomma}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; border-collapse: collapse">Pengiriman</th>
+                        <td colspan=2 style="border: 1px solid black; border-collapse: collapse">Rp 20.000 FLAT</td>                
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; border-collapse: collapse">Total Keseluruhan</th>
+                        <td colspan=2 style="border: 1px solid black; border-collapse: collapse">Rp. {{ order.total_final | intcomma}}</td>                
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; border-collapse: collapse">Metode Pembayaran</th>
+                        <td colspan=2 style="border: 1px solid black; border-collapse: collapse">Transfer Bank Langsung</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div style="padding : 3rem; display: inline-block; margin:auto">
+            <div style=" border-style: solid; padding: 2rem">
+                <h3> Alamat Penagihan</h3>
+                <p style="margin: 0px">{{ order.fist_name }} {{ order.last_name }}</p>
+                <p style="margin: 0px">{{ order.address.alamat }}</p>           
+                <p style="margin: 0px">{{ order.address.village }}</p>
+                <p style="margin: 0px">{{ order.address.district }}</p>
+                <p style="margin: 0px">{{ order.address.city }}</p>
+                <p style="margin: 0px">{{ order.address.province }}</p>
+                <p style="margin: 0px">{{ order.address.post_code }}</p>
+                <p style="margin: 0px">{{ order.email }}</p>
+            </div>
+
+        </div>
+        <div style="padding : 3rem">
+            <h4>Whatsapp : 0000000000</h4>
+            <h4>Email : admin@fetishia.store</h4>
+        </div>
+    </div>
+</body>
+</html>

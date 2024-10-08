@@ -30,6 +30,7 @@ class Product(models.Model):
     date_created = models.DateTimeField("Date Created",auto_now_add=True)
     image = models.ImageField(null=True,blank=True ,upload_to="images/product/")
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    link_tokopedia = models.CharField("Link Tokopedia",max_length=500, null=True, blank=True)
     slug = models.CharField("Product Slug", max_length=100, blank=True, editable=False, unique=True)
 
     def save(self, *args, **kwargs):

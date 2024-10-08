@@ -28,9 +28,16 @@
                     {% for product in all_products %}
                         <div name="product-card" class="col-lg-3 col-sm-6 px-4">
                             <div style="height: 24rem">
+                            {% load static %}
+                            {% if product.image %}
                             <a href="{% url 'products:product-details' product.slug %}">
                                 <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{{product.image.url}}" alt="">
-                            </a>                            
+                            </a>       
+                            {% else %}
+                            <a href="{% url 'products:product-details' product.slug %}">
+                                <img style="width: max-content; height: 18rem;"class="img-fluid object-fit-cover border rounded"src="{% static 'images/no-img.jpg' %}" alt="">
+                            </a> 
+                            {% endif %}               
                             <h6 class="text-break mt-3">{{product.title}}</h6>
                             <p>Rp {{product.price}}</p>
                         </div>

@@ -10,7 +10,13 @@
 <div class="container">
     <div class="row mx-5">
         <div class="col-5">
+                {% if product.image %}
                 <img style="max-width: 100%"class="w-100 img-fluid object-fit-cover border"src="{{product.image.url}}" alt="">        
+                {% else %}
+                {% load static %}
+                <img style="max-width: 100%"class="w-100 img-fluid object-fit-cover border"src="{% static 'images/no-img.jpg' %}" alt="">   
+                {% endif %}
+                
         </div>
         <div class="col-md-6">
             <h1 class='title-product-detail'>{{product.title}}</h1>
@@ -24,11 +30,16 @@
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
-                </div>
-                
+                </div>                
             </div>
-            <img class="logo-wa" src="{% static 'images/wa_button.png' %}" alt="">                
-            
+            <div><strong>Kategori |</strong> {{product.category}}</div>
+            <img class="logo-wa" src="{% static 'images/wa_button.png' %}" alt=""> 
+            {% if product.link_tokopedia %}
+            <div style="background-color: rgb(240,240,240)" class="p-3 rounded-2 w-50">
+                <p style="color: rgb(150,150,150)">Beli produk ini via marketplace</p>
+                <a href="{{product.link_tokopedia}}"><img style="width:50px" src="{% static 'images/tokopedia.png' %}" alt=""></a>
+            </div>
+            {% endif %}                           
         </div>
 
     </div>
@@ -37,3 +48,4 @@
 
 
 {% endblock %}
+

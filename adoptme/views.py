@@ -57,7 +57,12 @@ def custom_registration_view(request):
         form = CustomRegistrationForm()
     return render(request, 'registration-page.html', {'form': form})
 
-    
+def contact(request):
+    if request.method == 'GET':
+        return render(request, 'kontak.html')
+    else:
+        return HttpResponse("Invalid Method")
+
 def logout_view(request):
     logout(request)
     return redirect('/')

@@ -1,0 +1,94 @@
+.hover-element {
+    cursor: pointer;
+}
+
+.sold-tag {
+    font-size: large;
+    color: rgb(51, 51, 51);
+    background-color: rgb(221, 221, 221);
+    padding: 6px;
+    border-radius: 10px;
+}
+
+.product-description {
+    margin-top: 2rem;
+    color: rgb(94, 94, 94);
+    font-size: large;
+}
+
+.logo-wa {
+    width: 30%;
+}
+
+.product-image {
+    width: max-content;
+}
+
+#shopping-cart {
+    width: 120px;
+    max-width: 120px
+}
+
+.fa-cart-shopping {
+    margin-top: 12px;
+}
+
+/* .badge {
+    padding-left: 9px;
+    padding-right: 9px;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+} */
+
+.label-warning[href],
+.badge-warning[href] {
+    background-color: #c67605;
+}
+
+.image-keranjang {
+    width: 10rem;
+}
+
+.custom-cart-card {
+    height: 12rem;
+}
+
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 1000;
+
+}
+
+
+#lblCartCount {
+    font-size: 12px;
+    background: #ff0000;
+    color: #fff;
+    padding: 2px 4px;
+    vertical-align: top;
+    margin-left: -10px;
+}
+
+#syarat-ketentuan {
+    font-size: 14px;
+}
+
+@media only screen and (min-width: 768px) {
+    .profile-container {
+        width: 40%
+    }
+
+    .custom-container {
+        width: 60%;
+    }
+
+    .cart-container {
+        width: 60%;
+    }
+}

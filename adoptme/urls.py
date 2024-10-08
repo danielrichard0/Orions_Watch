@@ -36,5 +36,6 @@ urlpatterns = [
     path('address/',views.user_address, name='account-address'),
     path("change-address", views.change_address, name="change-address"),
     path('details/',views.details, name='account-details'),
+    path('kontak', views.contact, name="contact")
     
 ] + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
