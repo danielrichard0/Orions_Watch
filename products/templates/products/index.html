@@ -2,7 +2,7 @@
 
 
 {% block title %}
-
+{{title}}
 {% endblock %}
 
 {% block content %}
@@ -10,7 +10,6 @@
 <div class="container text-center">
     <h3>Archives:Toko</h3>
     <p>Beranda / Toko</p>
-    <h3>{{MEDIA_URL}} TEST</h3>
     <form method="GET" action="{% url 'products:index' %}">
         <div class="row mb-5">
             <div class="col-2 offset-9">
@@ -27,7 +26,7 @@
                 {% if all_products %}
                     {% for product in all_products %}
                         <div name="product-card" class="col-lg-3 col-sm-6 px-4">
-                            <div style="height: 24rem">
+                            <div style="height: 26rem">
                             {% load static %}
                             {% if product.image %}
                             <a href="{% url 'products:product-details' product.slug %}">
@@ -41,7 +40,11 @@
                             <h6 class="text-break mt-3">{{product.title}}</h6>
                             <p>Rp {{product.price}}</p>
                         </div>
-                        <button onclick="addToCart({{product.id}}, this)" class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
+                        {% if product.stock == 0 %}
+                        <button disabled class="btn btn-dark rounded-5 mb-5" type="button">Produk Habis</button>
+                        {% else %}
+                        <button onclick="addToCart({{product.id}}, this, 1)" class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 {% endif %}

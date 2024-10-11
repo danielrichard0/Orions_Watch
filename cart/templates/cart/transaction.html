@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %}
-
+{{title}}
 {% endblock%}
 
 {% block content %}
 
+{% if cart.cart %}
+<form id="order" method='POST'>
 <div class= "container custom-container">
     <h6>Beranda/Bayar</h6>
 
@@ -19,7 +21,7 @@
             {% endif %}
 
             <div class="border p-5">
-                <form id="order" method='POST'>
+
                     {% csrf_token %}
                     <div class="row">
                         <div class='col'>
@@ -82,7 +84,7 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row my-2">
+                    {% comment %} <div class="row my-2">
                         <div class="col">
                             <label for="id_district">Kecamatan : <span style="color: red">* </span></label>
                             {{form.district}}
@@ -99,7 +101,7 @@
                                 {{form.village.errors}}
                             {% endif %}
                         </div>
-                    </div>
+                    </div> {% endcomment %}
                     <div class="row my-2">
                         <div class="col">
                             <label for="id_address">Alamat : <span style="color: red">* </span></label>
@@ -141,13 +143,13 @@
                 {% if form.cust_note.errors %}
                     {{form.cust_note.errors}}
                 {% endif %}
-            </form>
+
             </div>
         </div>
         <div class="col-md-5">
-            <div class='border px-5 py-3'>
+            <div id="table-pesanan"class='border px-5 py-3'>
                 <h6>Pesanan Anda</h6>
-                <table class="table">
+                <table class="table" id="tb-content-pesanan">
                     <thead>
                         <th>Produk</th>
                         <th>Subtotal</th>
@@ -160,17 +162,25 @@
                             <td class="fw-light">Rp. {{item.total_itemprice | intcomma}}</td>
                         </tr>
                         {% endfor %}
+                        <tr>
+                            <th>Berat</th>
+                            <td>{{ cart.total_weight | intcomma}} g</td>
+                        </tr>
+                        <tr>
+                            <th>Pengiriman</th>
+                            {% if content %}
+                                {% include 'cart/transaksi-pesanan.html' %}
+                            {% else %}
+                             <td id="pengiriman">-</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <th>total</th>
+                            <td id="total-harga">Rp. {{cart.total|intcomma}}</td>
+                        </tr>   
                     </tbody>
-                    <tr>
-                        <th>Ongkos Kirim</th>
-                        <td>Rp. 20.000</td>
-                    </tr>
-                    <tr>
-                        <th>total</th>
-                        <td>Rp. {{cart.total|intcomma}}</td>
-                    </tr>
-
                 </table>
+
             </div>
             <div class="border mt-3 p-4">
                 <label>Transfer bank langsung</label>
@@ -186,17 +196,24 @@
                         Saya telah membaca dan setuju dengan syarat dan ketentuan yang berlaku pada website ini
                     </label>
                 </div>
+                <p id="warning-pengiriman"></p>
                 <button id="submit-data"type="submit" form="order" class="btn btn-dark rounded-0 w-100 mt-4">Buat Pesanan</button>
             </div>
         </div>
 
     </div>
 </div>
+</form>
+{% else %}
+<h3 class="text-center">Keranjang Kosong</h3>
+{% endif %}
+
 
 {% endblock content%}
 
 {% block customscript %}
 <script type='text/javascript'>
+    
     $(document).ready(function () {
         $("#submit-data").attr("disabled", true)
     })
@@ -210,13 +227,11 @@
                 data: {'province_id' : id},
                 success: function(res) {
                     let select = $("select[name='city']")
-                    $("select[name='district']").html('')
-                    $("select[name='village']").html('')
                     select.html('')
 
                     select.append('<option selected value=""> Pilih Kota </option>')
                     $(res.cities).each(function (i, val) {                    
-                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                        select.append(`<option value="${val['id']}">${val['city_name']}</option>`)
                     })
                 }
             })
@@ -224,27 +239,63 @@
     })
 
     $(document).on("change",'select[name="city"]', function() {
+        console.log("test")
         let id = $(this).val()
+        let spinner =
+        `<div class="spinner-overlay d-flex justify-content-center align-items-center">
+            <div class="spinner-grow" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`
+
         if (id) {
+            $("#tb-content-pesanan").append(spinner)
             $.ajax({
                 type: "GET",
-                url: "{% url 'cart:select-district' %}",
-                data: {'city_id' : id},
+                url: "{% url 'cart:get-ongkir' %}",
+                data :{
+                    city : id
+                },
                 success: function(res) {
-                    let select = $("select[name='district']")
-                    $("select[name='village']").html('')
-                    select.html('')
-
-                    select.append('<option selected value=""> Pilih Kecamatan </option>')
-                    $(res.districts).each(function (i, val) {                    
-                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
-                    })
+                    $("#pengiriman").replaceWith(res.component)
+                    $('.spinner-overlay').remove();
+                    a = res
+                },
+                error: function(e) {
+                    console.log("Gagal")
+                    $('.spinner-overlay').remove();
                 }
             })
         }        
     })
 
-    $(document).on("change",'select[name="district"]', function() {
+    $(document).on("change", 'input[name="radio-pengiriman"]', function() {
+        let spinner =
+        `<div class="spinner-overlay d-flex justify-content-center align-items-center">
+            <div class="spinner-grow" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`
+        $("#tb-content-pesanan").append(spinner)
+
+        $.ajax({
+            type:"GET",
+            url: "{% url 'cart:count-total' %}",
+            data : {
+                ongkir : this.value
+            },
+            success: function(res) {
+                console.log("res : ", res)
+                let formattedTotal = res.total.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'});
+                $("#total-harga").html(formattedTotal)
+                $('.spinner-overlay').remove();
+            }
+        })
+        
+        
+    })
+
+    {% comment %} $(document).on("change",'select[name="district"]', function() {
         let id = $(this).val()
         if (id) {
             $.ajax({
@@ -262,15 +313,28 @@
                 }
             })
         }        
-    })    
+    })     {% endcomment %}
 
     $("#check-term").on("change", function () {
         if (this.checked) {
-            $("#submit-data").attr("disabled", false)
+            a = $("input[name='radio-pengiriman']")
+            for(let i = 0; i < a.length; i++ ) {
+                if (a[i].checked) {
+                    $("#submit-data").attr("disabled", false)
+                }
+            }
         } else {
             $("#submit-data").attr("disabled", true)
         }
     })
+
+    $(document).on("click", "input[name='radio-pengiriman']", function() {
+        if ($("#check-term")[0].checked) {
+            $("#submit-data").attr("disabled", false)
+        } else {
+            $("#submit-data").attr("disabled", true)
+        }
+    });
 </script>
 
 

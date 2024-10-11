@@ -6,12 +6,20 @@
 {% if order %}
     {% load humanize %}
     {% load static %}
-    <p>Pesanan {{order.id}} dilakukan pada {{order.date_created}} </p>
+    <p>Pesanan No. {{order.id}} dilakukan pada {{order.date_created}} </p>
     <h6>Status : <strong>{{order.status_display}}</strong></h6>
     {% if order.status == 'MK1' %}
-    <p style="color: rgb(175,175,175); margin:0px">Jika dalam 2x24 jam pesanan belum di proses silahkan hubungi admin via WA berikut</p>
-    <img class="logo-wa pb-5" src="{% static 'images/wa_button.png' %}" alt=""> 
+    <p style="color: rgb(100,100,100); margin:0px">Silahkan membayar ke rekening dan nominal yang sudah tertera dibawah. Pesanan anda akan kami proses apabila kami sudah menkonfirmasi pembayaran anda.</p>
+    <ul class="list-group list-group-horizontal py-3">
+        <li class="list-group-item fw-light">BANK <p class="fw-bold">BCA</p></li>
+        <li class="list-group-item fw-light">NOMOR REKENING <p class="fw-bold">8040223909</p></li>
+    </ul>
+    <br>
+    {% elif order.status == 'DP2' %}
+    <p style="color: rgb(100,100,100); margin:0px">Pembayaran sudah dikonfirmasi. Silahkan tunggu kami untuk mengirimkan barang ke alamat anda. Apabila ada pertanyaan dapat ditanyakan melalui kontak WA berikut.</p>
     {% endif %}
+    <img class="logo-wa pb-2" src="{% static 'images/wa_button.png' %}" alt=""> <br>
+    <a href="{% url 'cart:checkout-order'%}?q={{order.id}}&token={{order.token}}" class="btn btn-dark m-auto my-3">Lihat struk</a>
     <h3>Rincian Pesanan</h3>
     <div class='border p-3 mb-3'>
         <table class='table'>
@@ -26,8 +34,19 @@
                 </tr>
             {% endfor %}
             <tr>
-                <th>Subtotal</th>
-                <th>Rp. {{order.total_price | intcomma}}</th>
+                <td>Subtotal</td>
+                <td>Rp. {{order.total_price | intcomma}}</td>
+            </tr>
+            <tr>
+                <td colspan=2></td>
+            </tr>
+            <tr>
+                <td>Pengiriman</td>
+                <td>{{order.agen_pengiriman | upper}} - {{order.service_pengiriman | upper}}</td>
+            </tr>
+            <tr>
+                <td>Ongkir</td>
+                <td>Rp. {{order.ongkir | intcomma}}</td>
             </tr>
             {% if order.cust_note %}
             <tr>

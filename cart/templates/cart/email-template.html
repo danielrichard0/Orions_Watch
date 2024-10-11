@@ -21,10 +21,10 @@
             <p style="margin: 0px">Halo {{order.first_name}} {{order.last_name}}</p>
             <p>Terimakasih atas pesanan anda. status masih tertahan sampai kami mengonfirmasi bahwa pembayaran telah diterima</p>
             <h3>Detail Bank Kami</h3>
-            <h3>Daniel Richardo</h3>
+            <h3>Maychelta Loverra Parentessa</h3>
             <ul>
                 <li>Bank : BCA</li>
-                <li>Nomor Rekening : 3930810176</li>
+                <li>Nomor Rekening : 8040223909</li>
             </ul>
         </div>
         <div style="padding-right: 3rem; padding-left: 3rem">
@@ -52,7 +52,7 @@
                     </tr>
                     <tr>
                         <th style="border: 1px solid black; border-collapse: collapse">Pengiriman</th>
-                        <td colspan=2 style="border: 1px solid black; border-collapse: collapse">Rp 20.000 FLAT</td>                
+                        <td colspan=2 style="border: 1px solid black; border-collapse: collapse">Rp. {{order.ongkir | intcomma}}</td>                
                     </tr>
                     <tr>
                         <th style="border: 1px solid black; border-collapse: collapse">Total Keseluruhan</th>
@@ -70,8 +70,6 @@
                 <h3> Alamat Penagihan</h3>
                 <p style="margin: 0px">{{ order.fist_name }} {{ order.last_name }}</p>
                 <p style="margin: 0px">{{ address.alamat }}</p>           
-                <p style="margin: 0px">{{ address.village }}</p>
-                <p style="margin: 0px">{{ address.district }}</p>
                 <p style="margin: 0px">{{ address.city }}</p>
                 <p style="margin: 0px">{{ address.province }}</p>
                 <p style="margin: 0px">{{ address.post_code }}</p>

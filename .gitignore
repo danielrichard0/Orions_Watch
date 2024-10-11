@@ -1,0 +1,9 @@
+city_csv.csv
+province_csv.csv
+adoptme/.env
+
+*.pyc
+__pycache__/
+
+media/
+static/

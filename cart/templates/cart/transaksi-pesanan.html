@@ -1,0 +1,15 @@
+{% load humanize %}
+{% if content %}
+<td id="pengiriman">
+    {% for ins in content %}
+        {% for jenis in ins.costs %}
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="radio-pengiriman" id="{{ins.code}}_{{jenis.service}}" value="{{jenis.cost.0.value}}|{{ins.code}}|{{jenis.service}}">
+            <label class="form-check-label" for="radio-pengiriman">
+            <strong>{{ins.code | upper}}</strong> - {{jenis.service}} : Rp {{jenis.cost.0.value | intcomma}}
+            </label>
+        </div>
+      {% endfor %}
+    {% endfor %}
+</td>
+{% endif %}

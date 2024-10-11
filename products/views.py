@@ -1,3 +1,4 @@
+from typing import Any
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views import generic
 from products.models import Product, Category
@@ -29,12 +30,18 @@ class IndexView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()  
+        context['title'] = "Beranda | Product"
         return context
     
 class ProductDetailView(generic.DetailView):
     model = Product
     template_name = 'products/item.html'
     context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Produk"
+        return context
 
     
 class CategoryView(generic.ListView):

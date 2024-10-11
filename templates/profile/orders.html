@@ -22,7 +22,7 @@
                 <tr>
                     <td>{{ord.id}}</td>
                     <td>{{ord.date_created}}</td>
-                    <td>{{ord.status}}</td>
+                    <td><strong>{{ord.status_display}}</strong></td>
                     <td>Rp. {{ord.total_price | intcomma}}</td>
                     <td><a href="{% url 'order-details' ord.id %}"class="btn btn-dark">Lihat</a></td>
                     {% comment %} <a href="{% url 'products:product-details' product.slug %}"> {% endcomment %}

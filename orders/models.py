@@ -25,6 +25,10 @@ class Order(models.Model):
     total_final = models.IntegerField("Harga Keseluruhan Tambah Ongkir", null=False, blank=False)
     status = models.CharField("Status Pesanan",max_length=3, choices=status_choices, null=False, blank=False)
     nomor_resi = models.CharField("Nomor Resi", max_length=50, null=True, blank=False)
+    agen_pengiriman = models.CharField("Agen Pengiriman", max_length=50, null=True, blank=True)
+    service_pengiriman = models.CharField("Service Pengiriman", max_length=50, null=True, blank=True)
+    total_weight = models.IntegerField("Total Berat", null=True, blank=True)
+    
 
     def __str__(self):
         date = self.date_created.strftime("%d/%B/%Y - %H:%M")

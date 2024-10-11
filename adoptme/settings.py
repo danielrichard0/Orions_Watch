@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hyo46-j-0i&h)u(2svnej-=cmy0)yjw=yiolk50$1ya@!ajsvw'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -25,7 +26,7 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.contenttypes',                                                                                                                                                                                                       
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -48,7 +49,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR.joinpath('templates')
+            BASE_DIR.joinpath('templates'),
+            BASE_DIR / "adoptme/templates"
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -72,14 +74,12 @@ WSGI_APPLICATION = 'adoptme.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD' : 'life4died1',
-        'HOST' : '127.0.0.1',
-        'PORT' : '5432',
-        'OPTIONS' : {
-            'options': '-c search_path=fantasia'
-        }
+        'NAME': config('DB_NAME_SHOP'),
+        'USER': config('DB_USER_SHOP'),
+        'PASSWORD' : config('DB_PASSWORD_SHOP'),
+        'HOST' : config('DB_HOST_SHOP'),
+        'PORT' : config('DB_PORT_SHOP'),
+        'OPTIONS' : {'options' : '-c search_path=fantasia'}
     }
 }
 
@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ID-id'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
@@ -132,3 +132,13 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Emailing system
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')

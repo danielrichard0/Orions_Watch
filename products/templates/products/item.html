@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-
+{{title}}
 {% endblock %}
 
 {% block content%}
@@ -26,14 +26,20 @@
             <h4 class="mb-3">Rp {{product.price|intcomma }}</h4>
             <div class="row form-group">
                 <div class="col-2">
-                    <input type="number" class="form-control text-center" value=1>
+                    <input id="count-cart" type="number" class="form-control text-center" value=1>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
+                    {% if product.stock == 0 %}
+                    <button disabled class="btn btn-dark rounded-5 mb-5" type="button">Produk Habis</button>
+                    {% else %}
+                    <button id="tambah-keranjang"onclick="insertCart({{product.id}})" class="btn btn-dark rounded-5 mb-5" type="button">Tambah ke Keranjang</button>
+                    {% endif %}
+                    
                 </div>                
             </div>
+            <h5>Stok : {{product.stock}}</h5>
             <div><strong>Kategori |</strong> {{product.category}}</div>
-            <img class="logo-wa" src="{% static 'images/wa_button.png' %}" alt=""> 
+            <a href="https://wa.link/5moh93"><img class="logo-wa" src="{% static 'images/wa_button.png' %}" alt=""> </a>
             {% if product.link_tokopedia %}
             <div style="background-color: rgb(240,240,240)" class="p-3 rounded-2 w-50">
                 <p style="color: rgb(150,150,150)">Beli produk ini via marketplace</p>
@@ -48,4 +54,14 @@
 
 
 {% endblock %}
+{% block customscript %}
+<script type="text/javascript">
 
+    function insertCart(prod_id) {
+        let count = $("#count-cart").val()
+        let tombol = document.getElementById("count-cart")
+
+        addToCart(prod_id, tombol, count)
+    }
+</script>
+{% endblock customscript %}

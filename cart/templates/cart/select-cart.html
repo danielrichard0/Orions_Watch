@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}{% endblock title %}
+{% block title %}
+{{title}}
+{% endblock title %}
 
 {% block content %}
 <style>
@@ -61,19 +63,30 @@
                     </thead>
                     <tbody>
                         <tr style="height: 10px;">
-                            <td style="color: gray" class='p-2 fw-bold'><span>subtotal</span> <span style="float: right;">Rp. {{cart.subtotal | intcomma}}</span></td>
+                            <td style="color: gray" class='p-2 fw-normal'><span>subtotal</span> <span style="float: right;">Rp. {{cart.subtotal | intcomma}}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: gray" class='p-2 fw-normal'><span>Berat (g)</span> <span style="float: right;"> {{cart.total_weight | intcomma}} g</span></td>
                         </tr>
                         <tr style="height: 10px;">
-                            <td style="color: gray" class='p-2 fw-bold'><span>Pengiriman</span> <span style="float: right;">Rp 20.000</span></td>
-                        </tr>
+                            <td class='p-2 fw-normal'><span>Total</span> <span style="float: right;">Rp. {{cart.total | intcomma}}</span></td>
+                        </tr>         
+                        {% if not cart.weight_condition %}
                         <tr style="height: 10px;">
-                            <td class='p-2 fw-bold'><span>Total</span> <span style="float: right;">Rp. {{cart.total | intcomma}}</span></td>
-                        </tr>                    
+                            <td class='p-2 fw-normal text-danger'><span class="text-danger"></span>Berat tidak boleh melebihi 30kg (30.000g) tolong kurangi pesanan anda</td>
+                        </tr>    
+                        {% endif %}        
                     </tbody>
+                    <tfoot>
+                        {% if cart.weight_condition %}
+                        <tr><td><a href="{% url 'cart:transaction' %}"class="btn btn-dark rounded-0 w-100 fw-bold" href="">Pembayaran</a> </td></tr>
+                        
+                        {% else %}
+                        <tr><td><a href="{% url 'cart:transaction' %}"class="btn btn-dark rounded-0 w-100 fw-bold disabled" href="">Pembayaran</a></td></tr>
+                        {% endif %}
+                    </tfoot>
                 </table>
-                <div>
-                    <a href="{% url 'cart:transaction' %}"class="btn btn-dark rounded-0 w-100 fw-bold" href="">Pembayaran</a>
-                </div>
+
             </div>
         </div>
     </div>

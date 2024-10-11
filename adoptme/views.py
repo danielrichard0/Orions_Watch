@@ -80,7 +80,16 @@ def orders(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
             id = request.user.id
-            usr_orders = Order.objects.filter(user=id)
+            usr_orders = Order.objects.annotate(
+                status_display=Case(
+                    When(status='MK1', then=Value('Menunggu Pembayaran')),
+                    When(status='DP2', then=Value('Sedang Diproses')),
+                    When(status='SD3', then=Value('Sedang Dikirim')),
+                    When(status='ST4', then=Value('Selesai')),
+                    default=Value('Menunggu Konfirmasi'),
+                    output_field=CharField()
+                )
+            ).filter(user=request.user.id)
             return render(request, 'profile/orders.html/', context={"orders" : usr_orders})
         else:
             return HttpResponse("Anda Belum Login")
@@ -115,7 +124,6 @@ def order_detail(request, id):
 def user_address(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            print("testing : ",request.user.id)
             try:
                 address = Address.objects.get(user=request.user.id)
             except:
@@ -143,7 +151,7 @@ def change_address(request):
             except:
                 return HttpResponse("Gagal")
             return redirect('/account/')
-
+        print("form error : ", form.errors)
     else:
         init_val = {
             'first_name' : request.user.first_name,
@@ -151,17 +159,15 @@ def change_address(request):
             'email' : request.user.email,
         }
         ori_addr = None
-        user = None
-        if request.user.is_authenticated: 
-            user = request.user.id
-            print("authed")
+        # user = None
+        # if request.user.is_authenticated: 
+        #     user = request.user.id
+
 
         if Address.objects.filter(user=request.user.id).exists():
             ori_addr = Address.objects.get(user=request.user.id)
             init_val['province'] = ori_addr.province
             init_val['city'] = ori_addr.city
-            init_val['district'] = ori_addr.district
-            init_val['village'] = ori_addr.village
             init_val['alamat'] = ori_addr.alamat
             init_val['post_code'] = ori_addr.post_code
             

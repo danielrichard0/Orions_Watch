@@ -1,21 +1,31 @@
 {% extends "base.html" %}
 
 {% block title %}
-
+{{title}}
 {% endblock%}
 
 {% block content %}
 <div class="container custom-container">
     <h6>Beranda/Bayar/Pesanan</h6>
-
+    {% load humanize %}
+    {% load static %}
     <div class='row'>
         <div class="col">
             <p>Terimakasih Pesanan Anda Telah Diterima</p>
+            {% if order.status == 'MK1' %}
             <strong><p class="text-danger">Silahkan membayar ke rekening dan nominal yang sudah tertera dibawah. Pesanan anda akan kami proses apabila kami sudah menkonfirmasi pembayaran anda.</p></strong>
+            {% elif order.status == 'DP2' %}
+            <p>Pembayaran sudah dikonfirmasi. Silahkan tunggu kami untuk mengirimkan barang ke alamat anda. Apabila ada pertanyaan dapat ditanyakan melalui kontak WA berikut</p>
+            <img style="width: 10rem"class="logo-wa pb-4" src="{% static 'images/wa_button.png' %}" alt=""> 
+            {% elif order.status == 'SD3' %}
+            <p class="m-0">No Resi  : <strong>{{order.nomor_resi}}</strong></p> 
+            <a class="btn btn-outline-dark my-2" href="https://jne.co.id/tracking-package">Lacak Barang</a>
+            {% endif %}
+            <h6>Status : <strong>{{order.status_display}}</strong> </h6>
             <ul class="list-group list-group-horizontal">
                 <li class="list-group-item fw-light">Nomor Pesanan <p class="fw-bold">{{order.id}}</p></li>
                 <li class="list-group-item fw-light">Tanggal <p class='fw-bold'>{{order.date_created}}</p></li>
-                <li class="list-group-item fw-light">Total <p class="fw-bold">{{subtotal}}</p></li>
+                <li class="list-group-item fw-light">Total <p class="fw-bold">Rp. {{order.total_final | intcomma}}</p></li>
                 <li class="list-group-item fw-light">Metode Pembayaran <p class="fw-bold">Transfer Bank</p></li>
               </ul>
         </div>
@@ -30,7 +40,7 @@
     <div class="row">
         <div class="col">
             <h6>
-                Daniel Richardo
+                Maychelta Loverra Parentessa
             </h6>
         </div>
     </div>
@@ -39,7 +49,7 @@
 
             <ul class="list-group list-group-horizontal">
                 <li class="list-group-item fw-light">BANK <p class="fw-bold">BCA</p></li>
-                <li class="list-group-item fw-light">NOMOR REKENING <p class="fw-bold">3930810176</p></li>
+                <li class="list-group-item fw-light">NOMOR REKENING <p class="fw-bold">8040223909</p></li>
             </ul>
         </div>
     </div>
@@ -61,16 +71,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% load humanize %}
+
                         {% for item in products %}
-                        <tr>
+                        <tr class="fw-light">
                             <td> {{item.product.title}} x {{item.quantity}} </td>
                             <td> Rp. {{item.total_itemprice | intcomma}}</td>
                         </tr>
                         {% endfor %}
                         <tr>
                             <td>Subtotal</td>
-                            <td>Rp. {{subtotal | intcomma}}</td>
+                            <td>Rp. {{order.total_price | intcomma}}</td>
+                        </tr>
+                        <tr class="row-divider">
+                            <td colspan="2"></td> <!-- Empty row for visual separation -->
+                        </tr>
+                        
+                        <tr>
+                            <td>Pengiriman</td>
+                            <td>{{order.agen_pengiriman | upper}} - {{order.service_pengiriman | upper}}</td>
+                        </tr>
+                        <tr>
+                            <td>Ongkir</td>
+                            <td>Rp. {{order.ongkir | intcomma}}</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <th>Rp. {{order.total_final | intcomma}}</th>
                         </tr>
                         <tr>
                             <td>Metode</td>
@@ -95,9 +121,9 @@
             <span class='col'>
                 <p class="m-0">{{order.first_name}} {{order.last_name}}</p>
                 <p class="m-0">{{order.address.alamat}}</p>
-                <p class="m-0">{{order.address.village.name | title}}</p>
-                <p class="m-0">{{order.address.district.name | title}}</p>
-                <p class="m-0">{{order.address.city.name | title}}</p>
+                {% comment %} <p class="m-0">{{order.address.village.name | title}}</p>
+                <p class="m-0">{{order.address.district.name | title}}</p> {% endcomment %}
+                <p class="m-0">{{order.address.city.city_name | title}}</p>
                 <p class="m-0">{{order.address.province.name | title}}</p>
                 <p class="m-0">{{order.address.cust_note }}</p>
                 <span><i class="fas fa-envelope mr-5"></i> {{order.email}}</span>

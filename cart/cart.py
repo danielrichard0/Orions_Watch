@@ -8,6 +8,8 @@ class CartProcessor():
         self.subtotal = 0
         self.quantity = 0
         self.total = 0
+        self.total_weight = 0
+        self.weight_condition = True
         identifier = {}
 
         if not request.session.session_key:
@@ -16,12 +18,17 @@ class CartProcessor():
             identifier = {"user_id" : request.user.id} 
         elif request.session.session_key:
             identifier =  {"session_id" : request.session.session_key}
-
+        
         self.cart = Cart.objects.filter(**identifier, order_id__isnull=True)
         if self.cart.exists():
             self.subtotal = self.cart.aggregate(total=Sum(F('product__price') * F('quantity')))['total']
-            self.total = self.subtotal + 20000
+            self.total_weight = self.cart.aggregate(total=Sum(F('product__weight') * F('quantity')))['total']            
+            self.total = self.subtotal
             self.quantity = self.cart.all().count()
+            if self.total_weight > 30000:
+                self.weight_condition = False
+            else:
+                self.weight_condition = True
 
     # setelah commit order, otomatis class ini hilang
     def commit_order(self, order_id):

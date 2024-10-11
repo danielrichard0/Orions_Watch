@@ -67,7 +67,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="row my-2">
+        {% comment %} <div class="row my-2">
             <div class="col">
                 <label for="id_district">Kecamatan : <span style="color: red">* </span></label>
                 {{form.district}}
@@ -84,7 +84,7 @@
                     {{form.village.errors}}
                 {% endif %}
             </div>
-        </div>
+        </div> {% endcomment %}
         <div class="row my-2">
             <div class="col">
                 <label for="id_address">Alamat : <span style="color: red">* </span></label>
@@ -125,14 +125,14 @@
 
                     select.append('<option selected value=""> Pilih Kota </option>')
                     $(res.cities).each(function (i, val) {                    
-                        select.append(`<option value="${val['id']}">${val['name']}</option>`)
+                        select.append(`<option value="${val['id']}">${val['city_name']}</option>`)
                     })
                 }
             })
         }        
     })
 
-    $(document).on("change",'select[name="city"]', function() {
+    {% comment %} $(document).on("change",'select[name="city"]', function() {
         let id = $(this).val()
         if (id) {
             $.ajax({
@@ -151,9 +151,9 @@
                 }
             })
         }        
-    })
+    }) {% endcomment %}
 
-    $(document).on("change",'select[name="district"]', function() {
+    {% comment %} $(document).on("change",'select[name="district"]', function() {
         let id = $(this).val()
         if (id) {
             $.ajax({
@@ -171,7 +171,7 @@
                 }
             })
         }        
-    })    
+    })     {% endcomment %}
 </script>
 
 {% endblock customscript %}

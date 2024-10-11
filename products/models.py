@@ -21,8 +21,9 @@ class Category(models.Model):
         return self.name
 
 class Product(models.Model):
-    title = models.CharField("Title",max_length=50)
-    description = models.CharField("Description",max_length=200)
+    title = models.CharField("Title",max_length=100)
+    weight = models.IntegerField("Berat Produk (g)", null=True, blank=False, default=0)
+    description = models.TextField("Description",max_length=1000)
     active = models.BooleanField("Active",default=False)
     price = models.IntegerField("Price",default=0, null=False)
     stock = models.IntegerField("Stock",default=0)
@@ -32,6 +33,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     link_tokopedia = models.CharField("Link Tokopedia",max_length=500, null=True, blank=True)
     slug = models.CharField("Product Slug", max_length=100, blank=True, editable=False, unique=True)
+    sold = models.IntegerField("Barang Terjual", default=0,null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug or self.title != self.__class__.objects.get(pk=self.pk).title:
